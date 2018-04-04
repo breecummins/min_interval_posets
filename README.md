@@ -5,10 +5,10 @@ numpy
 
 To run tests, from the command line do
 
->> cd min_interval_posets
->> pytest
+$ cd min_interval_posets
+$ pytest
 
 To create the figure and tables in the Example section of "Comparing timing of extremal events in collection of noisy time series" (2018), from the command line do
 
->> cd min_interval_posets
->> python scripts/figure_and_tables_2018.py
+$ cd min_interval_posets
+$ python scripts/figure_and_tables_2018.py
