@@ -1,0 +1,1 @@
+Library to find the ɛ-minimal intervals for a time series and create a poset of the ɛ-minimal intervals for a collection of time series.
