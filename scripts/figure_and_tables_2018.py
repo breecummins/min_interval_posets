@@ -2,11 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.rcParams.update({'font.size': 22})
-from libnetperturb.queries.patternmatch.curve import Curve
-import libnetperturb.queries.patternmatch.triplet_merge_trees as tmt
-import libnetperturb.queries.patternmatch.sublevel_sets as ss
+from libposets.curve import Curve
+import libposets.triplet_merge_trees as tmt
+import libposets.sublevel_sets as ss
 
-#FIXME: Write README
+# call from containing folder:
+# python3 scripts/figures_and_tables_2018.py
+# to create the figure and tables found in
+# "Comparing timing of extremal events in collection of noisy time series" (2018)
 
 # make curves
 x = np.arange(-2.5,5.01,0.01)
