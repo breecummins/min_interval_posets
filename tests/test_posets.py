@@ -20,10 +20,12 @@ def test():
         assert(pos == get_poset(get_mins_maxes("curve",curve,eps)))
 
     def check_output_doubles(pos,n,eps):
+        print(eps)
         np.random.seed(0)
         noise = np.random.normal(0,n,y.shape)
         curvey = Curve({ round(t,2) : round(v,10) for (t,v) in zip(x,y+noise) })
         curvez = Curve({ round(t,2) : round(v,10) for (t,v) in zip(x,z+noise) })
+        print(main({"y":curvey,"z":curvez},[eps])[0])
         assert(pos == main({"y":curvey,"z":curvez},[eps])[0])
 
     epsilons = [0.01,0.05]
@@ -38,10 +40,10 @@ def test():
     posets = ((posy1,posz1,posb1),(posy5,posz5,posb5))
     for (eps,pos) in zip(epsilons,posets):
         for n in noises:
-            if eps == 0.01:
-                check_output_singles(y,pos[0],n,eps)
-                check_output_singles(z,pos[1],n,eps)
-                check_output_doubles(pos[2], n, eps)
+            check_output_singles(y,pos[0],n,eps)
+            check_output_singles(z,pos[1],n,eps)
+            check_output_doubles((eps,pos[2]), n, eps)
+    eps = 0.0025
     pos=((('y', 'min'), ('y', 'max'), ('y', 'min'), ('y', 'max'), ('y', 'min'), ('z', 'max'), ('z', 'min'), ('z', 'max'), ('z', 'min'), ('z', 'max')), [(0, 1), (0, 2), (0, 3), (0, 4), (0, 6), (0, 7), (0, 8), (0, 9), (1, 2), (1, 3), (1, 4), (1, 7), (1, 8), (1, 9), (2, 3), (2, 4), (2, 8), (2, 9), (3, 4), (3, 9), (5, 1), (5, 2), (5, 3), (5, 4), (5, 6), (5, 7), (5, 8), (5, 9), (6, 1), (6, 2), (6, 3), (6, 4), (6, 7), (6, 8), (6, 9), (7, 2), (7, 3), (7, 4), (7, 8), (7, 9), (8, 3), (8, 4), (8, 9)])
-    check_output_doubles(pos, 0, 0.0025)
+    check_output_doubles((eps,pos), 0, eps)
 

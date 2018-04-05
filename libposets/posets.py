@@ -87,5 +87,5 @@ def main(curves,epsilons):
             else:
                 print("Warning: Epsilon = {:.3f} is too large to distinguish extrema. No poset returned.".format(eps))
                 return posets
-        posets.append(get_poset(all_extrema))
+        posets.append((eps,get_poset(all_extrema)))
     return posets
