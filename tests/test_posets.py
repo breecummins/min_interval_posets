@@ -25,8 +25,8 @@ def test():
         noise = np.random.normal(0,n,y.shape)
         curvey = Curve({ round(t,2) : round(v,10) for (t,v) in zip(x,y+noise) })
         curvez = Curve({ round(t,2) : round(v,10) for (t,v) in zip(x,z+noise) })
-        print(main({"y":curvey,"z":curvez},[eps])[0])
-        assert(pos == main({"y":curvey,"z":curvez},[eps])[0])
+        print(eps_posets({"y":curvey,"z":curvez},[eps])[0])
+        assert(pos == eps_posets({"y":curvey,"z":curvez},[eps])[0])
 
     epsilons = [0.01,0.05]
     posy1 = ((('curve', 'min'), ('curve', 'max'), ('curve', 'min'), ('curve', 'max'), ('curve', 'min')),

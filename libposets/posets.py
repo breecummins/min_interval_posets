@@ -21,56 +21,36 @@ def get_mins_maxes(name,curve,eps):
     time_ints_maxs = ss.minimal_time_ints(merge_tree_maxs,r,eps)
     labeled_mins = [(v,(name,"min")) for _,v in time_ints_mins.items()]
     labeled_maxs = [(v,(name,"max")) for _,v in time_ints_maxs.items()]
-    both = sorted(labeled_mins+labeled_maxs)
-    both = prune_overlap(both[:])
-    extrema = [b[1][-3:] for b in both]
+    nodes = sorted(labeled_mins+labeled_maxs)
+    extrema = [n[1][-3:] for n in nodes]
     if any(x==y for (x,y) in zip(extrema[:-1],extrema[1:])):
         # This shouldn't ever happen
         raise ValueError("Two minima or two maxima in a row.")
-    return both
+    # make within time series edges
+    edges = [(i,j) for i,n in enumerate(nodes) for j,m in enumerate(nodes) if n[0][0] < m[0][0]]
+    return nodes, edges
 
-def prune_overlap(both):
-    # get rid of overlapping mins and maxs
 
-    def combine(sublist):
-        m = sorted([o[0][0] for o in sublist])[0]
-        M = sorted([o[0][1] for o in sublist])[-1]
-        both.append(((m, M), sublist[0][1]))
+def get_poset(nodes,edges):
+    '''
+    Construct transitive closure of partial order.
 
-    z = list(zip(both[:-1],both[1:]))
-    overlap = set([])
-    while len(z) > 0:
-        (a,b) = z.pop(0)
-        while a[0][1] > b[0][0]:
-            overlap.add(a)
-            overlap.add(b)
-            (a,b) = z.pop(0)
-        if len(overlap)%2 == 1:
-            mins = [o for o in overlap if o[1][1]=="min"]
-            if len(mins) > len(overlap)/2.0:
-                combine(mins)
-            else:
-                maxs = [o for o in overlap if o[1][1]=="max"]
-                combine(maxs)
-        for o in overlap:
-            both.remove(o)
-        overlap = set([])
-    both.sort()
-    return both
-
-def get_poset(all_extrema):
-    ints,names = zip(*all_extrema)
-    edges = []
+    :param nodes: all extrema from all time series along with their epsilon-extremal intervals
+    :param edges: within time series edges, which are calculated differently than between time series edges
+    :return: labels of nodes and edges between nodes based on the index of the label
+    '''
+    edges = set(edges)
+    ints,names = zip(*nodes)
     for j,a in enumerate(ints):
         for k,b in enumerate(ints):
             # <= means interpret tuples as open intervals
             # <  means interpret tuples as closed intervals
              if a[1] <= b[0]:
-                edges.append((j,k))
+                edges.add((j,k))
     return names,edges
 
 
-def main(curves,epsilons):
+def eps_posets(curves,epsilons):
     '''
     Construct posets on multiple curves over multiple epsilons.
     :param curves: dict of instances of Curve, each keyed by unique name
@@ -79,13 +59,16 @@ def main(curves,epsilons):
     '''
     posets = []
     for eps in sorted(epsilons):
-        all_extrema = []
+        all_nodes = []
+        all_edges = []
         for name,curve in curves.items():
-            ae = get_mins_maxes(name,curve,eps)
-            if len(ae) > 1:
-                all_extrema.extend(ae)
+            nodes, edges = get_mins_maxes(name,curve,eps)
+            if len(nodes) > 1:
+                N = len(all_nodes)
+                all_nodes.extend(nodes)
+                all_edges.extend([(i+N,j+N) for (i,j) in edges]) #check for fencepost errors
             else:
                 print("Warning: Epsilon = {:.3f} is too large to distinguish extrema. No poset returned.".format(eps))
                 return posets
-        posets.append((eps,get_poset(all_extrema)))
+        posets.append((eps,get_poset(all_nodes,all_edges)))
     return posets
