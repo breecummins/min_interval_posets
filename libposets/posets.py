@@ -27,7 +27,14 @@ def get_mins_maxes(name,curve,eps):
         # This shouldn't ever happen
         raise ValueError("Two minima or two maxima in a row.")
     # make within time series edges
-    edges = [(i,j) for i,n in enumerate(nodes) for j,m in enumerate(nodes) if n[0][0] < m[0][0]]
+    edges = []
+    for i, n in enumerate(nodes):
+        for j, m in enumerate(nodes):
+            if i != j and n == m:
+                print("Warning: Epsilon = {:.3f} is too large to distinguish extrema. No poset returned.".format(eps))
+                return None, None
+            elif n[0][0] < m[0][0]:
+                edges.append((i,j))
     return nodes, edges
 
 
@@ -63,12 +70,11 @@ def eps_posets(curves,epsilons):
         all_edges = []
         for name,curve in curves.items():
             nodes, edges = get_mins_maxes(name,curve,eps)
-            if len(nodes) > 1:
+            if nodes:
                 N = len(all_nodes)
                 all_nodes.extend(nodes)
                 all_edges.extend([(i+N,j+N) for (i,j) in edges]) #check for fencepost errors
             else:
-                print("Warning: Epsilon = {:.3f} is too large to distinguish extrema. No poset returned.".format(eps))
                 return posets
         posets.append((eps,get_poset(all_nodes,all_edges)))
     return posets
