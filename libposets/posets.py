@@ -27,14 +27,7 @@ def get_mins_maxes(name,curve,eps):
         # This shouldn't ever happen
         raise ValueError("Two minima or two maxima in a row.")
     # make within time series edges
-    edges = []
-    for i, n in enumerate(nodes):
-        for j, m in enumerate(nodes):
-            if i != j and n == m:
-                print("Warning: Epsilon = {:.3f} is too large to distinguish extrema. No poset returned.".format(eps))
-                return None, None
-            elif n[0][0] < m[0][0]:
-                edges.append((i,j))
+    edges = [(i,j) for i, n in enumerate(nodes) for j, m in enumerate(nodes) if n[0][0] < m[0][0]]
     return nodes, edges
 
 
@@ -62,7 +55,7 @@ def eps_posets(curves,epsilons):
     Construct posets on multiple curves over multiple epsilons.
     :param curves: dict of instances of Curve, each keyed by unique name
     :param epsilons: list of threshold epsilons
-    :return: list of posets, one for each epsilon, unless epsilon gets too large to distinguish extrema
+    :return: list of posets, one for each epsilon
     '''
     posets = []
     for eps in sorted(epsilons):
@@ -70,11 +63,8 @@ def eps_posets(curves,epsilons):
         all_edges = []
         for name,curve in curves.items():
             nodes, edges = get_mins_maxes(name,curve,eps)
-            if nodes:
-                N = len(all_nodes)
-                all_nodes.extend(nodes)
-                all_edges.extend([(i+N,j+N) for (i,j) in edges]) #check for fencepost errors
-            else:
-                return posets
+            N = len(all_nodes)
+            all_nodes.extend(nodes)
+            all_edges.extend([(i+N,j+N) for (i,j) in edges]) #check for fencepost errors
         posets.append((eps,get_poset(all_nodes,all_edges)))
     return posets
