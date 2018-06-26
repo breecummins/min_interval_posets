@@ -43,9 +43,9 @@ def get_poset(nodes,edges):
     ints,names = zip(*nodes)
     for j,a in enumerate(ints):
         for k,b in enumerate(ints):
-            # <= means interpret tuples as open intervals
-            # <  means interpret tuples as closed intervals
-             if a[1] <= b[0]:
+            # interpret tuples as open-ended intervals, i.e. (a,b) < (b,c) unless a=b=c
+            # note (a,a) is not empty, it includes the single point a
+             if (a[1] < b[0]) or (a[1] == b[0] and (a[0] != a[1] or b[0] != b[1])):
                 edges.add((j,k))
     return names,edges
 
