@@ -19,15 +19,15 @@ def get_mins_maxes(name,curve,eps):
     merge_tree_maxs = tmt.births_only(r)
     time_ints_mins = ss.minimal_time_ints(merge_tree_mins,n,eps)
     time_ints_maxs = ss.minimal_time_ints(merge_tree_maxs,r,eps)
-    labeled_mins = [(v,(name,"min")) for _,v in time_ints_mins.items()]
-    labeled_maxs = [(v,(name,"max")) for _,v in time_ints_maxs.items()]
+    labeled_mins = [(v,(name," min")) for _,v in time_ints_mins.items()]
+    labeled_maxs = [(v,(name," max")) for _,v in time_ints_maxs.items()]
     nodes = sorted(labeled_mins+labeled_maxs)
     extrema = [n[1][-3:] for n in nodes]
     if any(x==y for (x,y) in zip(extrema[:-1],extrema[1:])):
         # This shouldn't ever happen
         raise ValueError("Two minima or two maxima in a row.")
     # make within time series edges
-    edges = [(i,j) for i,n in enumerate(nodes) for j,m in enumerate(nodes) if n[0][0] < m[0][0]]
+    edges = [(i,j) for i, n in enumerate(nodes) for j, m in enumerate(nodes) if n[0][0] < m[0][0]]
     return nodes, edges
 
 
@@ -55,7 +55,7 @@ def eps_posets(curves,epsilons):
     Construct posets on multiple curves over multiple epsilons.
     :param curves: dict of instances of Curve, each keyed by unique name
     :param epsilons: list of threshold epsilons
-    :return: list of posets, one for each epsilon, unless epsilon gets too large to distinguish extrema
+    :return: list of posets, one for each epsilon
     '''
     posets = []
     for eps in sorted(epsilons):
@@ -63,12 +63,8 @@ def eps_posets(curves,epsilons):
         all_edges = []
         for name,curve in curves.items():
             nodes, edges = get_mins_maxes(name,curve,eps)
-            if len(nodes) > 1:
-                N = len(all_nodes)
-                all_nodes.extend(nodes)
-                all_edges.extend([(i+N,j+N) for (i,j) in edges]) #check for fencepost errors
-            else:
-                print("Warning: Epsilon = {:.3f} is too large to distinguish extrema. No poset returned.".format(eps))
-                return posets
+            N = len(all_nodes)
+            all_nodes.extend(nodes)
+            all_edges.extend([(i+N,j+N) for (i,j) in edges]) #check for fencepost errors
         posets.append((eps,get_poset(all_nodes,all_edges)))
     return posets
