@@ -26,7 +26,7 @@ def get_mins_maxes(name,curve,eps):
     if any(x==y for (x,y) in zip(extrema[:-1],extrema[1:])):
         # This shouldn't ever happen
         raise ValueError("Two minima or two maxima in a row.")
-    # make within time series edges
+    # make within time series edges; [a,b] < [c,d] only if a < c
     edges = [(i,j) for i, n in enumerate(nodes) for j, m in enumerate(nodes) if n[0][0] < m[0][0]]
     return nodes, edges
 
@@ -43,10 +43,9 @@ def get_poset(nodes,edges):
     ints,names = zip(*nodes)
     for j,a in enumerate(ints):
         for k,b in enumerate(ints):
-            # interpret tuples as open-ended intervals, i.e. (a,b) < (b,c) unless a=b=c
-            # note (a,a) is not empty, it includes the single point a
-             if (a[1] < b[0]) or (a[1] == b[0] and (a[0] != a[1] or b[0] != b[1])):
-                edges.add((j,k))
+            # interpret tuples as closed intervals, i.e. [a,b] < [c,d] only if b < c
+            if a[1] < b[0]:
+                edges.add((j, k))
     return names,edges
 
 
@@ -65,6 +64,6 @@ def eps_posets(curves,epsilons):
             nodes, edges = get_mins_maxes(name,curve,eps)
             N = len(all_nodes)
             all_nodes.extend(nodes)
-            all_edges.extend([(i+N,j+N) for (i,j) in edges]) #check for fencepost errors
+            all_edges.extend([(i+N,j+N) for (i,j) in edges])
         posets.append((eps,get_poset(all_nodes,all_edges)))
     return posets
