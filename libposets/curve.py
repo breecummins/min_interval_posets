@@ -2,15 +2,25 @@ import numpy as np
 
 class Curve(object):
 
-    def __init__(self,curve,perturb=1.e-10):
+    def __init__(self,curve,times=None,norm=False):
         '''
         Collection of methods on dictionary representation of function.
         :param curve: a dictionary representing a function, float times keying float values
-        :param perturb: small perturbation float
+        OR
+        :param curve: length N list or numpy array of numerical values
+        :param times: length N list or numpy array of time points (numbers)
        '''
-        if any((not isinstance(x, (int, float))) or (not isinstance(y, (int, float))) for x,y in curve.items()):
-            raise ValueError("Curve must be of type {number : number}.")
-        self.curve = curve
+        if times is None:
+            if any((not isinstance(x, (int, float))) or (not isinstance(y, (int, float))) for x,y in curve.items()):
+                raise ValueError("Curve must be of type {number : number}.")
+            self.curve = curve
+        else:
+            if not isinstance(times[0],(int,float)) or not isinstance(curve[0],(int,float)):
+                raise ValueError("Parameters 'curve' and 'times' must be arrays of numbers.")
+            else:
+                self.curve = dict(zip(times,curve))
+        if norm:
+            self.curve = self.normalize()
 
     def normalize(self):
         '''
