@@ -9,14 +9,18 @@ def get_sublevel_sets(births_only_merge_tree,curve,eps):
     big_enough = [u for u,(s,v) in births_only_merge_tree.items() if not(u!=v and abs(curve[u] - curve[s]) < eps)]
     times = sorted([k for k in curve])
     time_intervals = dict()
+    # the following choices are optimized for sharp derivatives. The other alternative is to set k = i and remove the
+    # line k -= 1.
     for b in big_enough:
         i = times.index(b)
-        k = i
-        while k < len(times)-1 and abs(curve[times[k]] - curve[times[i]]) < 2*eps:
+        k = i+1
+        while k < len(times) and abs(curve[times[k]] - curve[times[i]]) < 2*eps:
             k += 1
-        j = i
-        while j > 0 and abs(curve[times[j]] - curve[times[i]]) < 2*eps:
+        k -= 1
+        j = i-1
+        while j > -1 and abs(curve[times[j]] - curve[times[i]]) < 2*eps:
             j -= 1
+        j+=1
         time_intervals[b] = (times[j],times[k])
     return time_intervals
 

@@ -19,9 +19,54 @@ def get_mins_maxes(name,curve,eps):
     merge_tree_maxs = tmt.births_only(r)
     time_ints_mins = ss.minimal_time_ints(merge_tree_mins,n,eps)
     time_ints_maxs = ss.minimal_time_ints(merge_tree_maxs,r,eps)
-    labeled_mins = [(v,(name," min")) for _,v in time_ints_mins.items()]
-    labeled_maxs = [(v,(name," max")) for _,v in time_ints_maxs.items()]
+    labeled_mins = sorted([(v,(name," min")) for _,v in time_ints_mins.items()])
+    labeled_maxs = sorted([(v,(name," max")) for _,v in time_ints_maxs.items()])
     nodes = sorted(labeled_mins+labeled_maxs)
+    # when a max and min are very close together on a flattish extremum, then the extremum
+    # can have both a max and a min label. The following code picks one.
+    prev=0
+    grpnodes = []
+    for m,n in zip(nodes[:-1],nodes[1:]):
+        if m == prev:
+            prev = n
+            continue
+        elif m[0][0] == n[0][0]:
+            grpnodes.append((m,n))
+            prev = n
+        else:
+            grpnodes.append(m)
+            prev = n
+    new_nodes = grpnodes[:]
+    # must handle case where all nodes are paired
+    if all([type(g) is tuple for g in grpnodes]):
+        n0 = grpnodes[0][0]
+        n1 = grpnodes[1][0]
+        for
+        if sum(n0[0])
+        t = n0[1]
+        label = n0[1][1][1:]
+        if label == "min" and n[]
+    while 0 in new_nodes:
+        for k,g in enumerate(grpnodes):
+            if type(g) is tuple:
+                if k > 0 and not(type(new_nodes[k-1]) is tuple):
+                    if "max" in new_nodes[k-1][1][1]:
+                        new_nodes[k] = g[0] if "min" in g[0][1][1] else g[1]
+                        continue
+                    if "min" in new_nodes[k-1][1][1]:
+                        new_nodes[k] = g[0] if "max" in g[0][1][1] else g[1]
+                        continue
+                elif k < len(grpnodes)-1 and not(type(new_nodes[k+1]) is tuple):
+                    if "max" in new_nodes[k+1][1][1]:
+                        new_nodes[k] = g[0] if "min" in g[0][1][1] else g[1]
+                        continue
+                    if "min" in new_nodes[k+1][1][1]:
+                        new_nodes[k] = g[0] if "max" in g[0][1][1] else g[1]
+                        continue
+
+
+
+    print(nodes)
     extrema = [n[1][-3:] for n in nodes]
     if any(x==y for (x,y) in zip(extrema[:-1],extrema[1:])):
         # This shouldn't ever happen

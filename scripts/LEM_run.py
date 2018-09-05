@@ -22,7 +22,7 @@ def row(filename):
     curves = [Curve(data[k,1:],times,True) for k in range(data.shape[0])]
     A = np.asarray([v for (i,v) in curves[0].curve.items()])
     plt.plot(times, A)
-    plt.plot(times, -1*A)
+    # plt.plot(times, -1*A,marker="o")
     plt.show()
     return dict(zip(names,curves))
 
@@ -46,12 +46,53 @@ def getposets(filename,filestyle,epsilons):
         curves = col(os.path.expanduser(filename))
     else:
         raise ValueError("Filestyle not recognized.")
-    print(curves)
     return posets.eps_posets(curves,epsilons)
+
+def troubleshoot(filename):
+    import libposets.triplet_merge_trees as tmt
+    import libposets.sublevel_sets as ss
+    eps = 0.005
+    c = row(os.path.expanduser(filename))["A"].normalize_reflect()
+    merge_tree_maxs = tmt.births_only(c)
+    print(merge_tree_maxs)
+    sublvl = ss.get_sublevel_sets(merge_tree_maxs,c,eps)
+    print(sublvl)
+    times = sorted([k for k in c])
+    b = 104
+    i = times.index(b)
+    k = i
+    print("forward")
+    while k < len(times)-1 and abs(c[times[k]] - c[times[i]]) < 2*eps:
+        print(times[k])
+        print(c[times[k]])
+        k += 1
+        print(k)
+    j = i
+    print("backward")
+    while j > 0 and abs(c[times[j]] - c[times[i]]) < 2*eps:
+        print(times[j])
+        print(c[times[j]])
+        j -= 1
+        print(j)
+    print((times[j+1],times[k-1]))
+
+def test():
+    x = np.arange(-np.pi,np.pi,0.01)
+    curve = {"A" : Curve(np.cos(x),x)}
+    print(posets.eps_posets(curve, [0.02]))
+
+def test2():
+    eps = 0.1
+    c = row(os.path.expanduser(filename))["A"]
+    print(posets.eps_posets({"A":c}, [eps]))
+
+
 
 if __name__ == "__main__":
     filename = "~/Simulations/Pipeline/20180904/clipped_LEMmanu_Fig3B-network_synnet_10-5-1_c2spc25.tsv"
     filestyle = "row"
-    epsilons = [0.1]
-    posets = getposets(filename,filestyle,epsilons)
-    print(posets)
+    epsilons = [0.05]
+    # posets = getposets(filename,filestyle,epsilons)
+    # print(posets)
+    # troubleshoot(filename)
+    test2()
