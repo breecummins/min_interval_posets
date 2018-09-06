@@ -14,11 +14,11 @@ def get_sublevel_sets(births_only_merge_tree,curve,eps):
     for b in big_enough:
         i = times.index(b)
         k = i+1
-        while k < len(times) and abs(curve[times[k]] - curve[times[i]]) < 2*eps:
+        while k < len(times) and abs(curve[times[k]] - curve[times[i]]) <= 2*eps:
             k += 1
         k -= 1
         j = i-1
-        while j > -1 and abs(curve[times[j]] - curve[times[i]]) < 2*eps:
+        while j > -1 and abs(curve[times[j]] - curve[times[i]]) <= 2*eps:
             j -= 1
         j+=1
         time_intervals[b] = (times[j],times[k])
