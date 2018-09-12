@@ -80,6 +80,9 @@ def get_mins_maxes(name,curve,eps):
         # This shouldn't ever happen
         print(nodes)
         raise ValueError("Two minima or two maxima in a row.")
+    elif len(extrema)==1:
+        # get rid of constant functions
+        nodes = []
     # make within time series edges; [a,b] < [c,d] only if a < c
     edges = [(i,j) for i, n in enumerate(nodes) for j, m in enumerate(nodes) if n[0][0] < m[0][0]]
     return nodes, edges
