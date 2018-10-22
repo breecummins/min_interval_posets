@@ -9,8 +9,6 @@ def get_sublevel_sets(births_only_merge_tree,curve,eps):
     big_enough = [u for u,(s,v) in births_only_merge_tree.items() if not(u!=v and abs(curve[u] - curve[s]) < eps)]
     times = sorted([k for k in curve])
     time_intervals = dict()
-    # the following choices are optimized for sharp derivatives. The other alternative is to set k = i and remove the
-    # line k -= 1.
     for b in big_enough:
         i = times.index(b)
         k = i+1
@@ -35,7 +33,7 @@ def minimal_time_ints(births_only_merge_tree,curve,eps):
     :return: dict of minima birth times each keying the associated (closed) epsilon-minimum interval
     '''
     ti = get_sublevel_sets(births_only_merge_tree,curve,eps)
-    stack = [v for v in ti]
+    stack = [w for w in ti]
     for u in stack:
         if any([u != v and ti[u][0] <= ti[v][0] and ti[u][1] >= ti[v][1] for v in ti]):
             ti.pop(u)
