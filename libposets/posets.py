@@ -41,8 +41,8 @@ def get_mins_maxes(name,curve,eps):
     merge_tree_maxs = tmt.births_only(r)
     time_ints_mins = ss.minimal_time_ints(merge_tree_mins,n,eps)
     time_ints_maxs = ss.minimal_time_ints(merge_tree_maxs,r,eps)
-    labeled_mins = sorted([(v,(name," min")) for _,v in time_ints_mins.items()])
-    labeled_maxs = sorted([(v,(name," max")) for _,v in time_ints_maxs.items()])
+    labeled_mins = sorted([(v,(name,"min")) for _,v in time_ints_mins.items()])
+    labeled_maxs = sorted([(v,(name,"max")) for _,v in time_ints_maxs.items()])
     # when a max and min are very close together on a flattish extremum, then the extremum
     # can have both a max and a min label. The following function resolves this.
     nodes = handle_dual_labeled_intervals(sorted(labeled_mins+labeled_maxs),name,eps)
@@ -97,7 +97,7 @@ def handle_dual_labeled_intervals(nodes,name,eps):
                     new_nodes[k] = (g[0],) if g[0][1][1] != new_nodes[k+1][0][1][1] else (g[1],)
     nodes = [N[0] for N in new_nodes]
     # check that extrema do oscillate
-    extrema = [n[1][-3:] for n in nodes]
+    extrema = [n[1] for n in nodes]
     if any(x==y for (x,y) in zip(extrema[:-1],extrema[1:])):
         # Should never get two minima or two maxima in a row. If there are, a bug fix is required.
         raise ValueError("Two minima or two maxima in a row: {}.".format(nodes))
