@@ -12,10 +12,12 @@ def get_sublevel_sets(births_only_merge_tree,curve,eps):
     for b in big_enough:
         i = times.index(b)
         k = i+1
+        # the reason why we need 2*eps instead of eps is in the paper Berry et al.
         while k < len(times) and abs(curve[times[k]] - curve[times[i]]) <= 2*eps:
             k += 1
         k -= 1
         j = i-1
+        # the reason why we need 2*eps instead of eps is in the paper Berry et al.
         while j > -1 and abs(curve[times[j]] - curve[times[i]]) <= 2*eps:
             j -= 1
         j+=1
