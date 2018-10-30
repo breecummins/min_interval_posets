@@ -6,21 +6,20 @@ def get_sublevel_sets(births_only_merge_tree,curve,eps):
     :param eps: float threshold (noise level) For normalized curves, 0 < eps < 1.
     :return: dict of minima birth times keying lifetime intervals
     '''
-    big_enough = [u for u,(s,v) in births_only_merge_tree.items() if not(u!=v and abs(curve[u] - curve[s]) < eps)]
+
+    big_enough = [u for u,(s,v) in births_only_merge_tree.items() if not(u!=v and abs(curve[u] - curve[s]) < 2*eps)]
     times = sorted([k for k in curve])
     time_intervals = dict()
     for b in big_enough:
         i = times.index(b)
-        k = i+1
+        k = i
         # the reason why we need 2*eps instead of eps is in the paper Berry et al.
-        while k < len(times) and abs(curve[times[k]] - curve[times[i]]) <= 2*eps:
+        while k < len(times)-1 and abs(curve[times[k]] - curve[times[i]]) < 2*eps:
             k += 1
-        k -= 1
-        j = i-1
+        j = i
         # the reason why we need 2*eps instead of eps is in the paper Berry et al.
-        while j > -1 and abs(curve[times[j]] - curve[times[i]]) <= 2*eps:
+        while j > 0 and abs(curve[times[j]] - curve[times[i]]) < 2*eps:
             j -= 1
-        j+=1
         time_intervals[b] = (times[j],times[k])
     return time_intervals
 
@@ -35,9 +34,16 @@ def minimal_time_ints(births_only_merge_tree,curve,eps):
     :return: dict of minima birth times each keying the associated (closed) epsilon-minimum interval
     '''
     ti = get_sublevel_sets(births_only_merge_tree,curve,eps)
-    stack = [w for w in ti]
+    # Choose the earliest of equally deep minima in same component
+    vals = [curve[k] for k in births_only_merge_tree]
+    if len(set(vals)) != len(vals):
+        stack = sorted([w for w in ti],reverse=True)
+        for u in stack:
+            if any([u != v and curve[u] == curve[v] and ti[u][0] <= ti[v][0] and ti[u][1] >= ti[v][1] for v in ti]):
+                ti.pop(u)
+    stack = sorted([w for w in ti], reverse=True)
     for u in stack:
         if any([u != v and ti[u][0] <= ti[v][0] and ti[u][1] >= ti[v][1] for v in ti]):
-            ti.pop(u)
+            raise ValueError("Debug: More intervals need to be excluded.")
     return ti
 

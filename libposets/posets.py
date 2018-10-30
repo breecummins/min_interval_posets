@@ -47,7 +47,7 @@ def get_mins_maxes(name,curve,eps):
     # can have both a max and a min label. The following function resolves this.
     nodes = handle_dual_labeled_intervals(sorted(labeled_mins+labeled_maxs),name,eps)
     # make within time series edges; [a,b] < [c,d] only if a < c
-    edges = [(i,j) for i, n in enumerate(nodes) for j, m in enumerate(nodes) if n[0][0] < m[0][0]]
+    edges = [(i,j) for i, n in enumerate(nodes) for j, m in enumerate(nodes) if n[0][0] < m[0][0] or n[0][1] < m[0][1]]
     return nodes, edges
 
 
@@ -63,8 +63,8 @@ def get_poset(nodes,edges):
     ints,names = zip(*nodes)
     for j,a in enumerate(ints):
         for k,b in enumerate(ints):
-            # interpret tuples as closed intervals, i.e. [a,b] < [c,d] only if b < c
-            if a[1] < b[0]:
+            # interpret tuples as open intervals, i.e. (a,b) < (c,d) only if b <= c
+            if a[1] <= b[0]:
                 edges.add((j, k))
     return names,edges
 
@@ -72,10 +72,13 @@ def get_poset(nodes,edges):
 def handle_dual_labeled_intervals(nodes,name,eps):
     # This ugly function handles the sticky case where there are both maxima and minima on a flattish extremum.
     # First identify intervals where this occurs and collect the paired labels.
+    print(name)
+    print(nodes)
+
     prev=None
     new_nodes = []
     for m,p in zip(nodes[:-1],nodes[1:]):
-        if m[0][0] == p[0][0]:
+        if m[0][0] == p[0][0] and m[0][1] == p[0][1]:
             new_nodes.append((m,p))
             prev = p
         elif m!= prev:
@@ -84,6 +87,9 @@ def handle_dual_labeled_intervals(nodes,name,eps):
         new_nodes+=[(nodes[-1],)]
     # now choose one of min/max on same interval using information from singletons
     # must first handle case where all nodes ended up paired
+    # if any([len(g)==2 for g in new_nodes]):
+    #     print(nodes)
+    #     raise ValueError("Dual labels")
     if all([len(g)==2 for g in new_nodes]):
         warn("There are two possibilities for the linear order of {} at epsilon = {}. \nOne is chosen at random. To resolve, try increasing epsilon.".format(name,eps))
         new_nodes[0] = (new_nodes[0][0],)

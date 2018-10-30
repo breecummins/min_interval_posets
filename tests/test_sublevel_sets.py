@@ -14,12 +14,12 @@ def test():
     assert(time_ints=={0: (0, 0), 2: (2, 2), 4: (4, 4), 6: (6, 6)})
     eps=2
     ti = get_sublevel_sets(births_only_merge_tree,curve.curve,eps)
-    assert(ti == {0: (0, 2), 2: (0, 5), 4: (4, 4), 6: (6, 6)})
+    assert(ti == {0: (0, 2), 4: (4, 4), 6: (6, 6)})
     time_ints = minimal_time_ints(births_only_merge_tree, curve.curve, eps)
     assert(time_ints=={0: (0, 2), 4: (4, 4), 6: (6, 6)})
     eps=3
     ti = get_sublevel_sets(births_only_merge_tree,curve.curve,eps)
-    assert(ti == {0: (0, 6), 4: (4, 6), 6: (6, 6)})
+    assert(ti == {6: (6, 6)})
     time_ints = minimal_time_ints(births_only_merge_tree, curve.curve, eps)
     assert(time_ints=={6: (6, 6)})
 
@@ -32,6 +32,6 @@ def test():
     assert(time_ints == {2: (0, 2), 6: (6, 6)})
     eps=3
     ti = get_sublevel_sets(births_only_merge_tree,curve2.curve,eps)
-    assert(ti == {2: (0, 4), 6: (0, 6)})
+    assert(ti == {2: (0, 4)})
     time_ints = minimal_time_ints(births_only_merge_tree, curve2.curve, eps)
     assert(time_ints == {2: (0, 4)})
