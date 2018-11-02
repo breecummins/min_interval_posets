@@ -32,13 +32,13 @@ def compute_merge_tree(curve):
     deepest = dict( (t,t) for t in curve )
     times = sorted([t for t in curve])
     edges = list(zip(times[:-1],times[1:]))
-    sorted_verts = [a for (a,b) in sorted(curve.items(), key=lambda t : (t[1],t[0]))]
-    for u in sorted_verts:
+    sorted_verts = [u for (u,_) in sorted(curve.items(), key=lambda t : (t[1],t[0]))]
+    for u in sorted_verts[1:]:
         leaves = []
         for e in edges:
             if u in e:
                 v = e[0] if u != e[0] else e[1]
-                if curve[v] < curve[u]:
+                if curve[v] <= curve[u]:
                     leaves.append(finddeepest(v))
         if len(leaves) > 0:
             inds = sorted(zip([sorted_verts.index(l) for l in leaves],leaves))

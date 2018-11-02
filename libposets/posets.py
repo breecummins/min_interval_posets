@@ -17,7 +17,7 @@ def eps_posets(curves,epsilons):
         all_nodes = []
         all_edges = []
         for name,curve in curves.items():
-            nodes, edges = get_mins_maxes(name,curve,eps)
+            nodes, edges = get_total_order(name,curve,eps)
             N = len(all_nodes)
             all_nodes.extend(nodes)
             all_edges.extend([(i+N,j+N) for (i,j) in edges])
@@ -25,7 +25,7 @@ def eps_posets(curves,epsilons):
     return posets
 
 
-def get_mins_maxes(name,curve,eps):
+def get_total_order(name,curve,eps):
     '''
     For a given (named) curve and threshold eps, find the eps-minimum intervals of
     both the maxima and minima of the curve.
@@ -39,16 +39,39 @@ def get_mins_maxes(name,curve,eps):
     r = curve.normalize_reflect()
     merge_tree_mins = tmt.births_only(n)
     merge_tree_maxs = tmt.births_only(r)
-    time_ints_mins = ss.minimal_time_ints(merge_tree_mins,n,eps)
-    time_ints_maxs = ss.minimal_time_ints(merge_tree_maxs,r,eps)
+    # time_ints_mins = ss.minimal_time_ints(merge_tree_mins,n,eps)
+    # time_ints_maxs = ss.minimal_time_ints(merge_tree_maxs,r,eps)
+    time_ints_mins = ss.get_sublevel_sets(merge_tree_mins,n,eps)
+    time_ints_maxs = ss.get_sublevel_sets(merge_tree_maxs,r,eps)
     labeled_mins = sorted([(v,(name,"min")) for _,v in time_ints_mins.items()])
     labeled_maxs = sorted([(v,(name,"max")) for _,v in time_ints_maxs.items()])
-    # when a max and min are very close together on a flattish extremum, then the extremum
-    # can have both a max and a min label. The following function resolves this.
-    nodes = handle_dual_labeled_intervals(sorted(labeled_mins+labeled_maxs),name,eps)
+    # When eps is close to (b-a)/2 for max b and min a, then the intervals can be identical. Annihilate them.
+    nodes = annihilate(sorted(labeled_mins+labeled_maxs))
+    # check that extrema do oscillate
+    extrema = [n[1] for n in nodes]
+    if any(x==y for (x,y) in zip(extrema[:-1],extrema[1:])):
+        # Should never get two minima or two maxima in a row. If there are, a bug fix is required.
+        raise ValueError("Two minima or two maxima in a row: {}.".format(nodes))
     # make within time series edges; [a,b] < [c,d] only if a < c
     edges = [(i,j) for i, n in enumerate(nodes) for j, m in enumerate(nodes) if n[0][0] < m[0][0] or n[0][1] < m[0][1]]
     return nodes, edges
+
+
+def annihilate(nodes):
+    # Get rid of intervals that are dual labeled
+    prev=None
+    new_nodes = []
+    for m,p in zip(nodes[:-1],nodes[1:]):
+        if m[0] == p[0]:
+            new_nodes.append((m,p))
+            prev = p
+        elif m!= prev:
+            new_nodes.append((m,))
+    if prev != nodes[-1]:
+        new_nodes+=[(nodes[-1],)]
+    if any([len(g)==2 for g in new_nodes]):
+        print("Annhilation occured.")
+    return [m[0] for m in new_nodes if len(m)==1]
 
 
 def get_poset(nodes,edges):
@@ -67,50 +90,4 @@ def get_poset(nodes,edges):
             if a[1] <= b[0]:
                 edges.add((j, k))
     return names,edges
-
-
-def handle_dual_labeled_intervals(nodes,name,eps):
-    # This ugly function handles the sticky case where there are both maxima and minima on a flattish extremum.
-    # First identify intervals where this occurs and collect the paired labels.
-    print(name)
-    print(nodes)
-
-    prev=None
-    new_nodes = []
-    for m,p in zip(nodes[:-1],nodes[1:]):
-        if m[0][0] == p[0][0] and m[0][1] == p[0][1]:
-            new_nodes.append((m,p))
-            prev = p
-        elif m!= prev:
-            new_nodes.append((m,))
-    if prev != nodes[-1]:
-        new_nodes+=[(nodes[-1],)]
-    # now choose one of min/max on same interval using information from singletons
-    # must first handle case where all nodes ended up paired
-    # if any([len(g)==2 for g in new_nodes]):
-    #     print(nodes)
-    #     raise ValueError("Dual labels")
-    if all([len(g)==2 for g in new_nodes]):
-        warn("There are two possibilities for the linear order of {} at epsilon = {}. \nOne is chosen at random. To resolve, try increasing epsilon.".format(name,eps))
-        new_nodes[0] = (new_nodes[0][0],)
-    # maxes and mins must alternate, so propagate the information given by singletons
-    while any([len(m)==2 for m in new_nodes]):
-        for k,g in enumerate(new_nodes):
-            if len(g)==2:
-                if k > 0 and len(new_nodes[k-1])==1:
-                    new_nodes[k] = (g[0],) if g[0][1][1] != new_nodes[k-1][0][1][1] else (g[1],)
-                elif k < len(new_nodes)-1 and len(new_nodes[k+1])==1:
-                    new_nodes[k] = (g[0],) if g[0][1][1] != new_nodes[k+1][0][1][1] else (g[1],)
-    nodes = [N[0] for N in new_nodes]
-    # check that extrema do oscillate
-    extrema = [n[1] for n in nodes]
-    if any(x==y for (x,y) in zip(extrema[:-1],extrema[1:])):
-        # Should never get two minima or two maxima in a row. If there are, a bug fix is required.
-        raise ValueError("Two minima or two maxima in a row: {}.".format(nodes))
-    elif len(extrema)==1:
-        # get rid of constant functions
-        warn("Time series {} is constant at epsilon = {} and is not included in the partial order. \nTo resolve, try decreasing epsilon.".format(name,eps))
-        nodes = []
-    return nodes
-
 

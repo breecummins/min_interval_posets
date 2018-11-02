@@ -24,26 +24,3 @@ def get_sublevel_sets(births_only_merge_tree,curve,eps):
     return time_intervals
 
 
-def minimal_time_ints(births_only_merge_tree,curve,eps):
-    '''
-    Produce merge tree and remove intervals that overlap by picking deeper min
-    (shorter interval). The remaining intervals are the "epsilon minimum intervals."
-    :param births_only_merge_tree: merge tree dict with intermediate points removed
-    :param curve: dict with times keying function values (Curve.curve or Curve.normalized)
-    :param eps: float threshold (noise level) For normalized curves, 0 < eps < 1.
-    :return: dict of minima birth times each keying the associated (closed) epsilon-minimum interval
-    '''
-    ti = get_sublevel_sets(births_only_merge_tree,curve,eps)
-    # Choose the earliest of equally deep minima in same component
-    vals = [curve[k] for k in births_only_merge_tree]
-    if len(set(vals)) != len(vals):
-        stack = sorted([w for w in ti],reverse=True)
-        for u in stack:
-            if any([u != v and curve[u] == curve[v] and ti[u][0] <= ti[v][0] and ti[u][1] >= ti[v][1] for v in ti]):
-                ti.pop(u)
-    stack = sorted([w for w in ti], reverse=True)
-    for u in stack:
-        if any([u != v and ti[u][0] <= ti[v][0] and ti[u][1] >= ti[v][1] for v in ti]):
-            raise ValueError("Debug: More intervals need to be excluded.")
-    return ti
-
