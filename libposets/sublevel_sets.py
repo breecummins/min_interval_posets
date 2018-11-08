@@ -6,7 +6,7 @@ def get_sublevel_sets(births_only_merge_tree,curve,eps):
     :param eps: float threshold (noise level) For normalized curves, 0 < eps < 1.
     :return: dict of minima birth times keying lifetime intervals
     '''
-
+    print(births_only_merge_tree)
     big_enough = [u for u,(s,v) in births_only_merge_tree.items() if not(u!=v and abs(curve[u] - curve[s]) < 2*eps)]
     times = sorted([k for k in curve])
     time_intervals = dict()
