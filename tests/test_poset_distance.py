@@ -34,14 +34,14 @@ def random_graph(N,Nlabels,edge_p):
     Gmatrix[np.tril_indices(N)] = 0
     G = nx.convert_matrix.from_numpy_matrix(Gmatrix,create_using=G)
     for n in G.nodes:
-        G.nodes[n]['label'] = str(random.choice(range(1,N+1,1)))
+        G.nodes[n]['label'] = str(random.choice(range(0,Nlabels,1)))
     return(G)
 
-def benchmark(N,seed=0):
+def benchmark(N,n,Nlabels,edge_p=0.25,seed=0):
     np.random.seed(seed)
-    G = random_graph(40,Nlabels = 20,edge_p = .5)
-    H = random_graph(40,Nlabels = 20,edge_p = .5)
-    for i in range(N):
+    G = random_graph(N,Nlabels,edge_p)
+    H = random_graph(N,Nlabels,edge_p)
+    for i in range(n):
         print(ldag.dag_distance(G,H))
 
 def example1():

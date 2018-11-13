@@ -3,6 +3,8 @@ Python 3 library to find the ɛ-minimum intervals for a time series and create a
 Dependencies:
 numpy
 
+Add path to min_interval_posets into .bash_profile in order for the modules to be able to interact.
+
 To run tests, from the command line do
 
 $ cd min_interval_posets  
