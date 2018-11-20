@@ -1,4 +1,3 @@
-import sys
 from . import triplet_merge_trees as tmt
 from . import sublevel_sets as ss
 
