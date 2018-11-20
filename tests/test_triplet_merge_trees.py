@@ -1,5 +1,5 @@
-from libposets.curve import Curve
-from libposets.triplet_merge_trees import *
+from ..libposets.curve import Curve
+from ..libposets.triplet_merge_trees import *
 
 def test():
 

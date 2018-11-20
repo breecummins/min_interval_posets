@@ -1,4 +1,4 @@
-from libposets.curve import Curve
+from ..libposets.curve import Curve
 
 def test():
     curve = Curve({0:-2, 1:2, 2:0, 3:1, 4:-2, 5:1, 6:-7})

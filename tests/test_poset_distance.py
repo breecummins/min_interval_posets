@@ -25,7 +25,7 @@
 import networkx as nx
 import numpy as np
 import random
-import libposets.poset_distance as ldag
+from ..libposets import poset_distance as ldag
 
 def random_graph(N,Nlabels,edge_p):
     G = nx.DiGraph()
