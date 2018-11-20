@@ -1,7 +1,7 @@
 import sys
-sys.path.append('../libposets')
-import libposets.triplet_merge_trees as tmt
-import libposets.sublevel_sets as ss
+sys.path.append('.')
+import triplet_merge_trees as tmt
+import sublevel_sets as ss
 
 
 def eps_posets(curves,epsilons):
