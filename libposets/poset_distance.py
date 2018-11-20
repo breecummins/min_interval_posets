@@ -55,11 +55,11 @@ def node_in(N,node_dict):
     for n in node_dict:
         if N == n[1]:
             return(True)
-    return(False)
+    return False
 
 
 def num_edges(node_dict):
-    return(sum([sum([(ne in node_dict) for ne in node_dict[node]]) for node in node_dict])/2)
+    return sum([sum([(ne in node_dict) for ne in node_dict[node]]) for node in node_dict])/2
 
 
 def find_num_nodes(G,H):
@@ -79,7 +79,7 @@ def find_num_nodes(G,H):
     for label in label_dict_g:
         if label in label_dict_h:
             tot_n+= min(label_dict_g[label],label_dict_h[label])
-    return(tot_n)
+    return tot_n
 
 
 def getmaxcommonsubgraphsize(G,H):
@@ -104,5 +104,5 @@ def getmaxcommonsubgraphsize(G,H):
         #Check the case in which no node in the mathcing graph corrisponds to G_list[0]
         return(sizes)
     #Gn is the list of nodes in G, for each node in G we must pick a node in the matching graph.
-    return(pick_nodes(list(set(Gn)),{}))
+    return pick_nodes(list(set(Gn)),{})
 
