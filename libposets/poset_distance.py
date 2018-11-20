@@ -25,7 +25,6 @@
 
 
 import networkx as nx
-import numpy as np
 
 
 def dag_distance(G,H):
