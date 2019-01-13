@@ -1,5 +1,5 @@
-from . import triplet_merge_trees as tmt
-from . import sublevel_sets as ss
+from min_interval_posets import triplet_merge_trees as tmt
+from min_interval_posets import sublevel_sets as ss
 
 
 def eps_posets(curves,epsilons):

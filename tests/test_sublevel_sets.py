@@ -1,6 +1,6 @@
-from ..libposets import triplet_merge_trees as tmt
-from ..libposets.curve import Curve
-from ..libposets.sublevel_sets import *
+from min_interval_posets import triplet_merge_trees as tmt
+from min_interval_posets.curve import Curve
+from min_interval_posets.sublevel_sets import *
 
 
 def test():

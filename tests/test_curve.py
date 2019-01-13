@@ -1,4 +1,4 @@
-from ..libposets.curve import Curve
+from min_interval_posets.curve import Curve
 
 def test():
     curve = Curve({0:-2, 1:2, 2:0, 3:1, 4:-2, 5:1, 6:-7})
@@ -7,3 +7,7 @@ def test():
     assert(curve.normalize_reflect() == Curve(curve.normalize()).reflect())
     assert(min([c for k,c in curve.normalize().items()])==-0.5)
     assert(max([c for k,c in curve.normalize().items()])==0.5)
+
+
+if __name__ == "__main__":
+    test()

@@ -1,5 +1,5 @@
-from ..libposets.curve import Curve
-from ..libposets import posets
+from min_interval_posets.curve import Curve
+from min_interval_posets import posets
 import os
 import pandas
 

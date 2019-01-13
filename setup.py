@@ -5,7 +5,7 @@ setup(
     version='0.0.1',
     package_dir={'':'lib'},
     packages = ['min_interval_posets'],
-    install_requires=[],
+    install_requires=["networkx","numpy"],
     author="Bree Cummins",
     url='https://github.com/breecummins/min_interval_posets'
     )
