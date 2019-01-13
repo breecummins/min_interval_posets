@@ -1,0 +1,4 @@
+NDD1 : (SWI4)(~YOX1) : E
+HCM1 : NDD1 : E
+SWI4 : HCM1 : E
+YOX1 : NDD1 : E

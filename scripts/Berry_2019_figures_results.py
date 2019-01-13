@@ -1,9 +1,8 @@
-from libposets.curve import Curve
-import libposets.posets as posets
+from ..libposets.curve import Curve
+from ..libposets import posets
 import os
 import pandas
-import matplotlib.pyplot as plt
-import numpy as np
+
 
 def extractdata(filename):
     file_type = filename.split(".")[-1]
@@ -15,6 +14,7 @@ def extractdata(filename):
         raise ValueError("File type not recognized. Require .tsv or .csv.")
     return list(df)[1:],df.values
 
+
 def row(filename):
     times,data = extractdata(filename)
     times = [float(n) for n in times]
@@ -24,11 +24,13 @@ def row(filename):
     # plt.show()
     return dict(zip(names,curves))
 
+
 def col(filename):
     names,data = extractdata(filename)
     times = data[:,0]
     curves = [Curve(data[1:,k],times,True) for k in range(data.shape[1])]
     return dict(zip(names,curves))
+
 
 def getposets(filename,filestyle,epsilons):
     '''
@@ -45,11 +47,3 @@ def getposets(filename,filestyle,epsilons):
     else:
         raise ValueError("Filestyle not recognized.")
     return posets.eps_posets(curves,epsilons)
-
-
-if __name__ == "__main__":
-    filename = "~/Simulations/Pipeline/20180904/clipped_LEMmanu_Fig3B-network_synnet_10-5-1_c2spc25.tsv"
-    filestyle = "row"
-    epsilons = [0.0,0.01,0.05,0.1]
-    posets = getposets(filename,filestyle,epsilons)
-    print(posets)
