@@ -2,6 +2,7 @@ from min_interval_posets.curve import Curve
 from min_interval_posets import posets
 import os
 import pandas
+from copy import deepcopy
 
 
 def extractdata(filename):
@@ -32,12 +33,13 @@ def col(filename):
     return dict(zip(names,curves))
 
 
-def getposets(filename,filestyle,epsilons):
+def getposets(filename,filestyle,epsilons,names="all"):
     '''
 
     :param filename: Name of the time series data file. Include absolute or relative path to file.
     :param filestyle: "row" if the time points lie in a single row, or "col" if they lie in a column
     :param epsilons: list of floats between 0 and 1
+    :param names: list of gene names on which to create poset. If "all" (default), then all genes in the file are used
     :return: list of partial orders, one for each epsilon
     '''
     if filestyle == "row":
@@ -46,4 +48,9 @@ def getposets(filename,filestyle,epsilons):
         curves = col(os.path.expanduser(filename))
     else:
         raise ValueError("Filestyle not recognized.")
-    return posets.eps_posets(curves,epsilons)
+    subset_curves = deepcopy(curves)
+    names = names if names is not "all" else []
+    for name in curves:
+        if name not in names:
+            subset_curves.pop(name)
+    return posets.eps_posets(subset_curves, epsilons)

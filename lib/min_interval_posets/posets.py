@@ -84,7 +84,7 @@ def get_poset(nodes,edges):
     for j,a in enumerate(ints):
         for k,b in enumerate(ints):
             # interpret tuples as open intervals, i.e. (a,b) < (c,d) only if b <= c
-            if a[1] <= b[0]:
+            if a[1] <= b[0] and a != b:
                 edges.add((j, k))
     return names,edges
 
