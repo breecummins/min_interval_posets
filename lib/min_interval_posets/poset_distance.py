@@ -106,3 +106,11 @@ def getmaxcommonsubgraphsize(G,H):
     #Gn is the list of nodes in G, for each node in G we must pick a node in the matching graph.
     return pick_nodes(list(set(Gn)),{})
 
+
+def poset_to_nx_graph(poset):
+    names,edges = poset
+    G = nx.DiGraph()
+    for k,n in enumerate(names):
+        G.add_node(k,label=str(n))
+    G.add_edges_from(edges)
+    return G
