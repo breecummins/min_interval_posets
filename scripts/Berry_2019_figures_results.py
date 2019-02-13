@@ -33,7 +33,7 @@ def col(filename):
     return dict(zip(names,curves))
 
 
-def getposets(filename,filestyle,epsilons,names="all"):
+def getposets(filename,filestyle,epsilons,names="all",start_time=None,end_time=None):
     '''
 
     :param filename: Name of the time series data file. Include absolute or relative path to file.
@@ -53,4 +53,6 @@ def getposets(filename,filestyle,epsilons,names="all"):
     for name in curves:
         if name not in names:
             subset_curves.pop(name)
+    if start_time is not None and end_time is not None:
+        subset_curves = {name : Curve(curve.trim(start_time,end_time)) for name,curve in subset_curves.items()}
     return posets.eps_posets(subset_curves, epsilons)

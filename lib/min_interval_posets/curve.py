@@ -46,3 +46,17 @@ class Curve(object):
         '''
         N = self.normalize()
         return dict((t,-1*n) for (t,n) in N.items())
+
+    def trim(self,start_time,end_time):
+        '''
+        Trim function according to start and end times.
+
+        :param start_time: Float or int representing earliest desired time.
+        :param end_time: Float or int representing last desired time.
+        :return: a dictionary representing a trimmed function, times key values
+        '''
+        times = sorted([t for t in self.curve])
+        vals = np.array([self.curve[t] for t in times])
+        start_ind = next(iter([x[0] for x in enumerate(times) if x[1] >= start_time]),0)
+        end_ind = next(iter([x[0] for x in enumerate(times) if x[1] > end_time]),len(times))
+        return dict((t, n) for (t, n) in zip(times[start_ind:end_ind], vals[start_ind:end_ind]))
