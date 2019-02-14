@@ -49,9 +49,8 @@ def getposets(filename,filestyle,epsilons,names="all",start_time=None,end_time=N
     else:
         raise ValueError("Filestyle not recognized.")
     subset_curves = deepcopy(curves)
-    names = names if names is not "all" else []
     for name in curves:
-        if name not in names:
+        if names != "all" and name not in names:
             subset_curves.pop(name)
     if start_time is not None and end_time is not None:
         subset_curves = {name : Curve(curve.trim(start_time,end_time)) for name,curve in subset_curves.items()}
