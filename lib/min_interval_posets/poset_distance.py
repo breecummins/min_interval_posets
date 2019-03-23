@@ -37,6 +37,10 @@ def dag_distance(G,H):
     return len(G.nodes) + len(H.nodes) + len(G.edges) + len(H.edges) - 2*getmaxcommonsubgraphsize(G,H)
 
 
+def normalized_dag_distance(G,H):
+    return dag_distance(G,H) / (len(G.nodes) + len(H.nodes) + len(G.edges) + len(H.edges))
+
+
 def makematchinggraph(G,H):
     # G and H are digraphs, matching_graph is undirected
     matching_graph = nx.Graph()
