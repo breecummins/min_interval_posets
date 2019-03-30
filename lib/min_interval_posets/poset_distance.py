@@ -29,7 +29,7 @@ import networkx as nx
 
 def dag_distance(G,H):
     '''
-    G and H are nx.DiGraph objects with node labels, representing ACYCLIC graphs. 
+    G and H are nx.DiGraph objects with node labels, representing ACYCLIC graphs.
     Returns the distance between G and H.
     '''
     G = nx.transitive_closure(G)
@@ -69,6 +69,7 @@ def num_edges(node_dict):
 def find_num_nodes(G,H):
     label_dict_g = {}
     label_dict_h = {}
+    lab_count = {}
     for ng in G.nodes:
         if G.nodes[ng]['label'] not in label_dict_g:
             label_dict_g[G.nodes[ng]['label']] = 1
@@ -82,33 +83,52 @@ def find_num_nodes(G,H):
     tot_n = 0
     for label in label_dict_g:
         if label in label_dict_h:
-            tot_n+= min(label_dict_g[label],label_dict_h[label])
-    return tot_n
+            lab_count[label] = min(label_dict_g[label],label_dict_h[label])
+            tot_n+= lab_count[label]
+    for label in label_dict_h:
+        if label not in label_dict_g:
+            lab_count[label] = 0
+    return tot_n, lab_count
+
 
 
 def getmaxcommonsubgraphsize(G,H):
-    numnodes = find_num_nodes(G,H)
+    numnodes, fin_count = find_num_nodes(G,H)
+    end_count = {}
+    start_count = {}
+    for lab in fin_count:
+        end_count[lab] = 0
+        start_count[lab] = 0
+    for lab in fin_count:
+        for node in G.nodes:
+            if G.nodes[node]['label'] == lab:
+                start_count[lab] +=1
     G = nx.transitive_closure(G)
     H = nx.transitive_closure(H)
     matching_graph = makematchinggraph(G,H)
     labels = [v for v in matching_graph.nodes()]
     mg_nodes = dict([(n, [e for e in matching_graph.neighbors(n)]) for n in matching_graph])
     Gn,Hn = zip(*labels)
-    def pick_nodes(G_list, node_dict):
+    def pick_nodes(G_list, node_dict, s_count, e_count):
         if len(G_list) == 0:
                 return(numnodes+num_edges(node_dict))
         sizes = 0
+        l = G.nodes[G_list[0]]['label']
+        s_count[l] += -1
+        e_count[l] += 1
         for node in mg_nodes:
             if node[0] == G_list[0] and not node_in(node[1], node_dict):
                 #check if node in matching graph corresponds to our node in G and check if node choice is valid
-                sizes=max(sizes,pick_nodes(G_list[1:], {**node_dict,node:mg_nodes[node]}))
+
+                sizes=max(sizes,pick_nodes(G_list[1:], {**node_dict,node:mg_nodes[node]}, s_count.copy(),e_count.copy()))
                 #pick this node and then make recursive call to pick other nodes
-        if numnodes < len(node_dict) + len(G_list):
-            sizes = max(sizes, pick_nodes(G_list[1:], node_dict))
+        if fin_count[l] < e_count[l] + s_count[l]:
+            e_count[l]+= -1
+            sizes = max(sizes, pick_nodes(G_list[1:], node_dict, s_count.copy(), e_count.copy()))
         #Check the case in which no node in the mathcing graph corrisponds to G_list[0]
         return(sizes)
     #Gn is the list of nodes in G, for each node in G we must pick a node in the matching graph.
-    return pick_nodes(list(set(Gn)),{})
+    return pick_nodes(list(set(Gn)),{}, start_count,end_count)
 
 
 def poset_to_nx_graph(poset):
