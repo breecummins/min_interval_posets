@@ -92,6 +92,7 @@ def find_num_nodes(G,H):
 
 
 
+
 def getmaxcommonsubgraphsize(G,H):
     numnodes, fin_count = find_num_nodes(G,H)
     end_count = {}
@@ -116,8 +117,14 @@ def getmaxcommonsubgraphsize(G,H):
         l = G.nodes[G_list[0]]['label']
         s_count[l] += -1
         e_count[l] += 1
+        pre = [n for n in G.predecessors(G_list[0])]
+        psi_of_pre = [node[1] for node in node_dict if (node[0] in pre and l == G.nodes[node[0]]['label'])]
+        not_valid = []
+        for n in psi_of_pre:
+            not_valid+= [n for n in H.predecessors(n)]
+        not_valid = set(not_valid)
         for node in mg_nodes:
-            if node[0] == G_list[0] and not node_in(node[1], node_dict):
+            if node[0] == G_list[0] and not node_in(node[1], node_dict) and node[1] not in not_valid:
                 #check if node in matching graph corresponds to our node in G and check if node choice is valid
 
                 sizes=max(sizes,pick_nodes(G_list[1:], {**node_dict,node:mg_nodes[node]}, s_count.copy(),e_count.copy()))
