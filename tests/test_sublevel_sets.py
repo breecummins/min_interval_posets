@@ -56,3 +56,9 @@ def test():
     time_ints = get_sublevel_sets(births_only_merge_tree, curve5.curve,1.6)
     assert(time_ints == {1: (0, 7)})
 
+    # constant curve
+    curve6 = Curve({0:2,1:2,2:2,3:2,4:2,5:2,6:2,7:2})
+    births_only_merge_tree = tmt.births_only(curve6.curve)
+    time_ints = get_sublevel_sets(births_only_merge_tree, curve6.curve,0.5)
+    assert(time_ints == {0: (0, 7)})
+    print(time_ints)
