@@ -38,6 +38,8 @@ def dag_distance(G,H):
 
 
 def normalized_dag_distance(G,H):
+    G = nx.transitive_closure(G)
+    H = nx.transitive_closure(H)
     return dag_distance(G,H) / (len(G.nodes) + len(H.nodes) + len(G.edges) + len(H.edges))
 
 
