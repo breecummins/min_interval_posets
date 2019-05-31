@@ -124,6 +124,37 @@ def test2():
 
 def test3():
     curve6 = Curve({0:2,1:2,2:2,3:2,4:2,5:2,6:2,7:2})
-    posets = eps_posets({"curve6":curve6},[0.1])
-    assert(posets == [(0.1, ([], set()))])
+    curve7 = Curve({0:2,1:2,2:2,3:2,4:2,5:2,6:2})
+    eps=0.1
+
+    def part(curve):
+        n = curve.normalize()
+        r = curve.normalize_reflect()
+        merge_tree_mins = tmt.births_only(n)
+        merge_tree_maxs = tmt.births_only(r)
+        # time_ints_mins = ss.minimal_time_ints(merge_tree_mins,n,eps)
+        # time_ints_maxs = ss.minimal_time_ints(merge_tree_maxs,r,eps)
+        time_ints_mins = ss.get_sublevel_sets(merge_tree_mins,n,eps)
+        time_ints_maxs = ss.get_sublevel_sets(merge_tree_maxs,r,eps)
+        labeled_mins = sorted([(v,("name","min")) for _,v in time_ints_mins.items()])
+        labeled_maxs = sorted([(v,("name","max")) for _,v in time_ints_maxs.items()])
+        # When eps is close to (b-a)/2 for max b and min a, then the intervals can be identical. Annihilate them.
+        all_extrema = labeled_mins+labeled_maxs
+        nodes = annihilate(sorted(all_extrema))
+        return all_extrema,nodes
+
+
+    all_extrema,nodes = part(curve6)
+    assert(len(all_extrema) == 16)
+    assert(len(nodes)==0)
+    all_extrema,nodes = part(curve7)
+    assert(len(all_extrema) == 14)
+    assert(len(nodes)==0)
+    nodes,edges = get_total_order("name", curve6, eps)
+    assert(len(nodes)==0)
+    nodes,edges = get_total_order("name", curve7, eps)
+    assert(len(nodes)==0)
+
+    posets = eps_posets({"curve6":curve6},[eps])
+    assert(posets == [(eps, ([], set()))])
 
