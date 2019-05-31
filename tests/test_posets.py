@@ -125,6 +125,7 @@ def test2():
 def test3():
     curve6 = Curve({0:2,1:2,2:2,3:2,4:2,5:2,6:2,7:2})
     curve7 = Curve({0:2,1:2,2:2,3:2,4:2,5:2,6:2})
+    curve8 = Curve({0:2,1:2,2:2,3:3,4:2,5:2,6:2})
     eps=0.1
 
     def part(curve):
@@ -154,7 +155,8 @@ def test3():
     assert(len(nodes)==0)
     nodes,edges = get_total_order("name", curve7, eps)
     assert(len(nodes)==0)
-
+    nodes,edges = get_total_order("name", curve8, eps)
+    assert(len(nodes)==3)
     posets = eps_posets({"curve6":curve6},[eps])
     assert(posets == [(eps, ([], set()))])
 
