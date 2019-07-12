@@ -25,8 +25,6 @@
 
 
 import networkx as nx
-from copy import deepcopy
-from copy import copy
 
 def dag_distance(G,H):
     '''
