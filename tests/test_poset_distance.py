@@ -88,7 +88,6 @@ def example3():
 
 def test_dag():
     G,H = example1()
-    ldag.getmaxcommonsubgraph = ldag.getmaxcommonsubgraph_new
     assert ldag.getmaxcommonsubgraphsize(G,H) == 8
     G,H = example2()
     assert ldag.getmaxcommonsubgraphsize(G,H) == 2
