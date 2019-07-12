@@ -35,6 +35,14 @@ def random_graph(N,Nlabels,edge_p):
     G = nx.convert_matrix.from_numpy_matrix(Gmatrix,create_using=G)
     for n in G.nodes:
         G.nodes[n]['label'] = str(random.choice(range(0,Nlabels,1)))
+    L = list(nx.topological_sort(G))
+    for n in L:
+        for m in L:
+            if G.nodes[n]['label'] == G.nodes[m]['label'] and (not n ==m):
+                if L.index(m) > L.index(n):
+                    G.add_edge(n,m)
+                else:
+                    G.add_edge(m,n)
     return(G)
 
 def benchmark(N,n,Nlabels,edge_p=0.25,seed=0):
@@ -80,11 +88,8 @@ def example3():
 
 def test_dag():
     G,H = example1()
-    assert ldag.getmaxcommonsubgraphsize(G,H) == 14
-    assert ldag.dag_distance(G,H) == 21
-    G,H = example2()
     assert ldag.getmaxcommonsubgraphsize(G,H) == 8
-    assert ldag.dag_distance(G,H) == 7
+    G,H = example2()
+    assert ldag.getmaxcommonsubgraphsize(G,H) == 2
     G,H = example3()
-    assert ldag.getmaxcommonsubgraphsize(G,H) == 10
-    assert ldag.dag_distance(G,H) == 31
+    assert ldag.getmaxcommonsubgraphsize(G,H) == 5
