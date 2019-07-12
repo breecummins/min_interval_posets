@@ -18,7 +18,10 @@ def eps_posets(curves,epsilons):
             N = len(all_nodes)
             all_nodes.extend(nodes)
             all_edges.extend([(i+N,j+N) for (i,j) in edges])
-        posets.append((eps,get_poset(all_nodes,all_edges)))
+        if all_nodes:
+            posets.append((eps,get_poset(all_nodes,all_edges)))
+        else:
+            posets.append((eps,([],set([]))))
     return posets
 
 
