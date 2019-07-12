@@ -33,7 +33,7 @@ def dag_distance(G,H):
     '''
     G = nx.transitive_closure(G)
     H = nx.transitive_closure(H)
-    return getmaxcommonsubgraphsize(G,H)/(max(len(G.edges), len(H.edges)))
+    return 1 - getmaxcommonsubgraphsize(G,H)/(max(len(G.edges), len(H.edges)))
 
 normalized_dag_distance = dag_distance
 
