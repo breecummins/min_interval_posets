@@ -115,6 +115,8 @@ def getmaxcommonsubgraphsize(G,H):
                 G_count[lab] +=1
     matching_graph = makematchinggraph(G,H)
     mg_nodes_list = list(matching_graph.nodes())
+    if len(mg_nodes_list) == 0:
+        return 0
     #mg_nodes is a dictionary keyed by matching graph node which gives edges connected to a node
     mg_nodes = {n: [e for e in matching_graph.neighbors(n)] for n in matching_graph}
     Gn,Hn = zip(*mg_nodes_list)
