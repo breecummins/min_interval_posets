@@ -25,7 +25,8 @@
 
 
 import networkx as nx
-
+from copy import deepcopy
+from copy import copy
 
 def dag_distance(G,H):
     '''
@@ -34,14 +35,9 @@ def dag_distance(G,H):
     '''
     G = nx.transitive_closure(G)
     H = nx.transitive_closure(H)
-    return len(G.nodes) + len(H.nodes) + len(G.edges) + len(H.edges) - 2*getmaxcommonsubgraphsize(G,H)
+    return getmaxcommonsubgraphsize(G,H)/(max(len(G.edges), len(H.edges)))
 
-
-def normalized_dag_distance(G,H):
-    G = nx.transitive_closure(G)
-    H = nx.transitive_closure(H)
-    return dag_distance(G,H) / (len(G.nodes) + len(H.nodes) + len(G.edges) + len(H.edges))
-
+normalized_dag_distance = dag_distance
 
 def makematchinggraph(G,H):
     # G and H are digraphs, matching_graph is undirected
@@ -50,12 +46,12 @@ def makematchinggraph(G,H):
         for j in H.nodes():
             if G.nodes[i]['label'] == H.nodes[j]['label']:
                 matching_graph.add_node((i,j))
+                matching_graph.nodes[(i,j)]['label'] = G.nodes[i]['label']
     for p in matching_graph.nodes():
         for q in matching_graph.nodes():
             if G.has_edge(p[0],q[0]) and H.has_edge(p[1],q[1]):
                 matching_graph.add_edge(p,q)
     return matching_graph
-
 
 def node_in(N,node_dict):
     for n in node_dict:
@@ -64,8 +60,8 @@ def node_in(N,node_dict):
     return False
 
 
-def num_edges(node_dict):
-    return sum([sum([(ne in node_dict) for ne in node_dict[node]]) for node in node_dict])/2
+def num_edges(node_dict,nodes):
+    return sum([sum([(ne in nodes) for ne in node_dict[node]]) for node in nodes])/2
 
 
 def find_num_nodes(G,H):
@@ -87,58 +83,84 @@ def find_num_nodes(G,H):
         if label in label_dict_h:
             lab_count[label] = min(label_dict_g[label],label_dict_h[label])
             tot_n+= lab_count[label]
+        else:
+            lab_count[label] = 0
     for label in label_dict_h:
         if label not in label_dict_g:
             lab_count[label] = 0
-    return tot_n, lab_count
+    return lab_count
 
 
-
+def make_node_dic(G):
+    dic = {}
+    labels = set([G.nodes[n]['label'] for n in G.nodes])
+    for l in labels:
+       dic[l] = [n for n in G.nodes if G.nodes[n]['label'] == l]
+    return(dic)
 
 def getmaxcommonsubgraphsize(G,H):
-    numnodes, fin_count = find_num_nodes(G,H)
-    end_count = {}
-    start_count = {}
-    for lab in fin_count:
-        end_count[lab] = 0
-        start_count[lab] = 0
+    G = nx.transitive_closure(G)
+    H = nx.transitive_closure(H)
+    #Calculate number of nodes of each label in the MCES. (We only consider solutions with a maximal number of nodes)
+    #fin_count is a dictionary of number of nodes keyed by label
+    fin_count = find_num_nodes(G,H)
+    #end_count will keep track of how many nodes of each label have been matched so far
+    end_count = {lab:0 for lab in fin_count}
+    #G_count will keep track of how many nodes of each label in g have yet to be matched
+    G_count = {lab:0 for lab in fin_count}
+    #Populate G_count
     for lab in fin_count:
         for node in G.nodes:
             if G.nodes[node]['label'] == lab:
-                start_count[lab] +=1
-    G = nx.transitive_closure(G)
-    H = nx.transitive_closure(H)
+                G_count[lab] +=1
     matching_graph = makematchinggraph(G,H)
-    labels = [v for v in matching_graph.nodes()]
-    mg_nodes = dict([(n, [e for e in matching_graph.neighbors(n)]) for n in matching_graph])
-    Gn,Hn = zip(*labels)
-    def pick_nodes(G_list, node_dict, s_count, e_count):
+    mg_nodes_list = list(matching_graph.nodes())
+    #mg_nodes is a dictionary keyed by matching graph node which gives edges connected to a node
+    mg_nodes = {n: [e for e in matching_graph.neighbors(n)] for n in matching_graph}
+    Gn,Hn = zip(*mg_nodes_list)
+    S = G.subgraph(Gn)
+    #Gl is the list of nodes in G and Hs is the set of nodes in H
+    #The order of elements of Gl respects the partial order given by G
+    Gl = list(nx.topological_sort(S))
+    Hs = set(Hn)
+    #G_list is unmatched nodes in G
+    #matches is the set of ordered pairs which match nodes from G to H, thus it is a list of nodes in the mathcing graph
+    #g_count tracks the number of nodes of each label in G_list
+    #g_count tracks the number of nodes of each label in matches
+    def pick_nodes(G_list, matches, g_count,  e_count, Hs):
+        #Base case: when there are no nodes left in G to match
         if len(G_list) == 0:
-                return(numnodes+num_edges(node_dict))
+            #Calculate the number of edges in this common edge subgraph
+            return(num_edges(mg_nodes, matches))
         sizes = 0
-        l = G.nodes[G_list[0]]['label']
-        s_count[l] += -1
+        #the function will try to find a match for the next item in G_list, this is node_to_match
+        node_to_match = G_list[0]
+        #l is the label of node_to_match
+        l = G.nodes[node_to_match]['label']
+        #change counts since one node is removed from G_list and one added to nodes
+        g_count[l] += -1
         e_count[l] += 1
-        pre = [n for n in G.predecessors(G_list[0])]
-        psi_of_pre = [node[1] for node in node_dict if (node[0] in pre and l == G.nodes[node[0]]['label'])]
-        not_valid = []
-        for n in psi_of_pre:
-            not_valid+= [n for n in H.predecessors(n)]
-        not_valid = set(not_valid)
-        for node in mg_nodes:
-            if node[0] == G_list[0] and not node_in(node[1], node_dict) and node[1] not in not_valid:
-                #check if node in matching graph corresponds to our node in G and check if node choice is valid
-
-                sizes=max(sizes,pick_nodes(G_list[1:], {**node_dict,node:mg_nodes[node]}, s_count.copy(),e_count.copy()))
-                #pick this node and then make recursive call to pick other nodes
-        if fin_count[l] < e_count[l] + s_count[l]:
+        #each h_node (node in H with label l) is a potential match
+        for h_node in Hs[l]:
+            new_match   = (node_to_match, h_node)
+            #no_pair gives the nodes in H which can not have a pair if new_match is used. Here we use that G_list respects the partial order
+            no_pair = [h for h in H.predecessors(h_node) if  h  in Hs[l]]
+            #check if the above restriction allows the correct final number of nodes of each label to be reached.
+            if (fin_count[l] <= len(Hs[l])+ e_count[l] - len(no_pair) -1):
+                #copy Hs to new_Hs#
+                new_Hs = {l:Hs[l].copy() for l in Hs}
+                new_Hs[l].remove(h_node)
+                for m in no_pair:
+                    new_Hs[l].remove(m)
+                sizes=max(sizes,pick_nodes(G_list[1:], matches|{new_match}, g_count.copy(),e_count.copy(), new_Hs))
+        #determine if not matching node_to_match to any node in H can result in a graph with the correct number of nodes of each label
+        if fin_count[l] < e_count[l] + g_count[l]:
             e_count[l]+= -1
-            sizes = max(sizes, pick_nodes(G_list[1:], node_dict, s_count.copy(), e_count.copy()))
-        #Check the case in which no node in the mathcing graph corrisponds to G_list[0]
+            #this is the case where node_to_match is not matched
+            sizes = max(sizes, pick_nodes(G_list[1:], matches, g_count.copy(), e_count.copy(), Hs.copy()))
         return(sizes)
-    #Gn is the list of nodes in G, for each node in G we must pick a node in the matching graph.
-    return pick_nodes(list(set(Gn)),{}, start_count,end_count)
-
+    #initial recursive call
+    return pick_nodes(Gl,set(), G_count.copy(), end_count.copy(), make_node_dic(H))
 
 def poset_to_nx_graph(poset):
     names,edges = poset
