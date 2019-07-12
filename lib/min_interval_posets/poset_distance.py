@@ -60,9 +60,7 @@ def node_in(N,node_dict):
     return False
 
 
-def num_edges(node_dict):
-    return sum([sum([(ne in node_dict) for ne in node_dict[node]]) for node in node_dict])/2
-def num_edges_2(node_dict,nodes):
+def num_edges(node_dict,nodes):
     return sum([sum([(ne in nodes) for ne in node_dict[node]]) for node in nodes])/2
 
 
@@ -90,24 +88,7 @@ def find_num_nodes(G,H):
     for label in label_dict_h:
         if label not in label_dict_g:
             lab_count[label] = 0
-    return  lab_count
-
-def comp_graph(G,H):
-    M = nx.Graph()
-    for g in G:
-        for h in H:
-            M.add_node((g,h))
-    for v1 in M:
-        for v2 in M:
-            if not v1 ==v2:
-                if not (((v1[0],v2[0]) in G) + ((v1[1],v2[1]) in H)) ==1:
-                    M.add_edge(v1,v2)
-    return(M)
-
-def MCIS(G,H):
-    C = comp_graph(G,H)
-    print(len(C.nodes))
-    return (nx.graph_clique_number(C))
+    return lab_count
 
 
 def make_node_dic(G):
@@ -117,7 +98,7 @@ def make_node_dic(G):
        dic[l] = [n for n in G.nodes if G.nodes[n]['label'] == l]
     return(dic)
 
-def final_getmaxcommonsubgraphsize(G,H):
+def getmaxcommonsubgraphsize(G,H):
     G = nx.transitive_closure(G)
     H = nx.transitive_closure(H)
     #Calculate number of nodes of each label in the MCES. (We only consider solutions with a maximal number of nodes)
@@ -150,7 +131,7 @@ def final_getmaxcommonsubgraphsize(G,H):
         #Base case: when there are no nodes left in G to match
         if len(G_list) == 0:
             #Calculate the number of edges in this common edge subgraph
-            return(num_edges_2(mg_nodes, matches))
+            return(num_edges(mg_nodes, matches))
         sizes = 0
         #the function will try to find a match for the next item in G_list, this is node_to_match
         node_to_match = G_list[0]
