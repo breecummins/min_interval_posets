@@ -10,9 +10,9 @@ from copy import deepcopy
 def extractdata(filename):
     file_type = filename.split(".")[-1]
     if file_type == "tsv":
-        df = pandas.read_csv(open(filename),delim_whitespace=True)
+        df = pandas.read_csv(open(filename),delim_whitespace=True,comment="#")
     elif file_type == "csv":
-        df = pandas.read_csv(open(filename))
+        df = pandas.read_csv(open(filename),comment="#")
     else:
         raise ValueError("File type not recognized. Require .tsv or .csv.")
     return list(df)[1:],df.values
@@ -31,8 +31,8 @@ def row(filename):
 def col(filename):
     names,data = extractdata(filename)
     times = data[:,0]
-    curves = [Curve(data[1:,k],times,True) for k in range(data.shape[1])]
-    return dict(zip(names,curves))
+    curves = [Curve(data[:,k],times,True) for k in range(1,data.shape[1])]
+    return dict(zip(names,curves)), times
 
 
 def getcurves(filename,filestyle,names,start_time,end_time):
