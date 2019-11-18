@@ -29,7 +29,11 @@ class Curve(object):
         '''
         times = [t for t in self.curve]
         vals = np.array([self.curve[t] for t in times])
-        nvals = (vals - float(np.min(vals))) / (np.max(vals) - np.min(vals)) - 0.5
+        # nvals = (vals - float(np.min(vals))) / (np.max(vals) - np.min(vals)) - 0.5
+        if np.max(vals) - np.min(vals):
+            nvals = (vals - float(np.min(vals))) / (np.max(vals) - np.min(vals)) - 0.5
+        else:
+            nvals = np.asarray([0]*len(times))
         return dict((t, n) for (t, n) in zip(times, nvals))
 
     def reflect(self):

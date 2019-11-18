@@ -146,10 +146,10 @@ def test3():
 
 
     all_extrema,nodes = part(curve6)
-    assert(len(all_extrema) == 16)
+    assert(len(all_extrema) == 2)
     assert(len(nodes)==0)
     all_extrema,nodes = part(curve7)
-    assert(len(all_extrema) == 14)
+    assert(len(all_extrema) == 2)
     assert(len(nodes)==0)
     nodes,edges = get_total_order("name", curve6, eps)
     assert(len(nodes)==0)
