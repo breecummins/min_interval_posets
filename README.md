@@ -47,7 +47,7 @@ To make a partial order of the ɛ-extremal intervals for two time series Curve o
 ```bash
 ipython >> from min_interval_posets.posets import eps_posets
 
-ipython >> P = eps_posets({"y":cy.curve,"z":cz.curve},[eps1, eps2, eps3])
+ipython >> P = eps_posets({"y":cy,"z":cz},[eps1, eps2, eps3])
 
 ```
 
