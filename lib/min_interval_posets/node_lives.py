@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from min_interval_posets import triplet_merge_trees as tmt
+from min_interval_posets.curve import Curve
+from min_interval_posets.triplet_merge_trees import births_only
 
 def get_min_lives(curve):
     '''
@@ -29,7 +30,7 @@ def get_min_lives(curve):
     :param curve: dict with times keying function values (should be of the form curve.curve or curve.normalized)
     :return: dict of node lives for each local minima in the curve
     '''
-    births_only_merge_tree = tmt.births_only(curve)
+    births_only_merge_tree = births_only(curve)
     min_lives = dict()
     for u,(s,v) in births_only_merge_tree.items():
         if s == v:

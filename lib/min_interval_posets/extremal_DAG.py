@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from min_interval_posets import DAG_skeleton as ds
-from min_interval_posets import node_lives as nl
-from min_interval_posets import eps_intersection as ei
+from min_interval_posets.DAG_skeleton import get_DAGskeleton
+from min_interval_posets.node_lives import get_node_lives
+from min_interval_posets.eps_intersection import get_eps_intersection
 
 def get_extremalDAG(curves):
     '''
@@ -32,7 +32,7 @@ def get_extremalDAG(curves):
     in the edge are indicated by index values.
     '''
     # computing and organizing extremal DAG skeleton (i.e. no node or edge weights)
-    DAG = ds.get_DAGskeleton(curves)
+    DAG = get_DAGskeleton(curves)
     times = [DAG[0][i][0] for i in range(len(DAG[0]))]
     labels = [DAG[0][i][1][0] for i in range(len(DAG[0]))]
     nodes = [DAG[0][i][1] for i in range(len(DAG[0]))]
@@ -42,7 +42,7 @@ def get_extremalDAG(curves):
 
     # this loop goes through and computes the node weights
     for key in curves.keys():
-        node_lives = nl.get_node_lives(curves[key])
+        node_lives = get_node_lives(curves[key])
         for i in range(len(times)):
             if labels[i] == key:
                 node_weights.append((i, node_lives[times[i]]))
@@ -52,7 +52,6 @@ def get_extremalDAG(curves):
         if labels[u] == labels[v]: # if nodes are part of same curve, then compute min of node lives
             edge_weights.append(((u,v), min(node_weights[u][1], node_weights[v][1])))
         else: # if nodes are from different curves, then compute min of node lives and eps intersection value
-            edge_weights.append(((u,v), min(ei.get_eps_intersection(times[u],times[v],curves[labels[u]],curves[labels[v]]),
-                                 node_weights[u][1], node_weights[v][1])))
+            edge_weights.append(((u,v), min(get_eps_intersection(times[u],times[v],curves[labels[u]],curves[labels[v]]), node_weights[u][1], node_weights[v][1])))
 
     return nodes, node_weights, edge_weights

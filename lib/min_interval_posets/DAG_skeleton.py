@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from min_interval_posets import eps_intersection as ei
+from min_interval_posets.eps_intersection import get_extremum_type
 
 def get_nodes(name, curve):
     '''
@@ -32,7 +32,7 @@ def get_nodes(name, curve):
     '''
     nodes = []
     for u in curve.keys():
-        ex_type_u = ei.get_extremum_type(u, curve)
+        ex_type_u = get_extremum_type(u, curve)
         if ex_type_u == "min" or ex_type_u == "max":
             nodes.append((u, (name, ex_type_u)))
     nodes.sort()
