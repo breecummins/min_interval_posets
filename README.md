@@ -7,7 +7,6 @@ $ . install.sh
 
 ```
 
-
 To run tests, from the command line do
 
 ```bash
@@ -64,7 +63,7 @@ ipython >> graph_q = pd.poset_to_nx_graph(q)
 ipython >> dist = pd.dag_distance(graph_p,graph_q)
 
 ```
-Let `curves ` be a dictionary where the keys are names of the curves and the items are curve classes (ASK: or curve objects?). To compute the extremal DAG for `curves`, do
+Let `curves ` be a dictionary where the keys are names of the curves and the items are curve classes. To compute the extremal DAG for `curves`, do
 ```bash 
 ipython >> from min_interval_posets.DAG_skeleton import get_DAGskeleton
 
@@ -78,10 +77,15 @@ ipython >> extremalDAG = get_extremalDAG(curves)
 
 ```
 Let `DAG1` and `DAG2` be two extremal DAGs that have the same data structure as the output of the `get_extremalDAG` function. Additionally, suppose `DAG1` and `DAG2` have the same 
-names for the curves they are representing and the names are in same order for `DAG1` and `DAG2`.
+names for the curves they are representing, and the names are in same order for `DAG1` and `DAG2`.
 Let `names` be a list of the named curves in the same order as the curve names in `DAG1` and `DAG2`. To compute the supergraph of `DAG1` and `DAG2`, do
 ```bash
 ipython >> import math
 
+python >> from min_interval_posets.supergraph import get_supergraph
+
 ipython >> supergraph = get_supergraph(names, DAG1, DAG2)
 ```
+Note the last number in the supergraph output is the distance between `DAG1` and `DAG2`.
+
+To see a more indepth example on computing and comparing extremal DAGs, see the Jupyter notebooks titled "extremalDAG_supergraph_example" and "yeast_example_NCSH" in the `scripts` folder. 
