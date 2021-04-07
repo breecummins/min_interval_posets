@@ -82,7 +82,7 @@ Let `names` be a list of the named curves in the same order as the curve names i
 ```bash
 ipython >> import math
 
-python >> from min_interval_posets.supergraph import get_supergraph
+ipython >> from min_interval_posets.supergraph import get_supergraph
 
 ipython >> supergraph = get_supergraph(names, DAG1, DAG2)
 ```
