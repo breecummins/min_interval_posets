@@ -63,7 +63,7 @@ ipython >> graph_q = pd.poset_to_nx_graph(q)
 ipython >> dist = pd.dag_distance(graph_p,graph_q)
 
 ```
-Let `curves ` be a dictionary where the keys are names of the curves and the items are curve classes. To compute the extremal DAG for `curves`, do
+Let `curves` be a dictionary where the keys are names of the curves and the items are curve classes. To compute the extremal DAG for `curves`, do
 ```bash 
 ipython >> from min_interval_posets.DAG_skeleton import get_DAGskeleton
 
