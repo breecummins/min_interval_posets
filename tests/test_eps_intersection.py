@@ -25,7 +25,7 @@ def test2():
     c1 = Curve({x[i]:y[i] for i in range(len(x))})
     c2 = Curve({x[i]:z[i] for i in range(len(y))})
     curves = {"sine":c1, "cosine":c2}
-    epsintersection1 = ei.get_eps_intersection(1.6, 6.2, c1, c2)
-    epsintersection2 = ei.get_eps_intersection(0, 6.2, c1, c2)
-    assert(epsintersection1 == 0.8250928589434148)
-    assert(epsintersection2 == 0.49978680152075255)
+    epsintersection1 = round(ei.get_eps_intersection(1.6, 6.2, c1, c2),8)
+    epsintersection2 = round(ei.get_eps_intersection(0, 6.2, c1, c2),8)
+    assert(epsintersection1 == 0.82509286)
+    assert(epsintersection2 == 0.4997868)
