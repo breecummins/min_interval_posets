@@ -22,7 +22,7 @@
 
 from min_interval_posets.curve import Curve
 from min_interval_posets.triplet_merge_trees import births_only
-from min_interval_posets.sublevel_sets import get_sublevel_sets_no_restriction as gssnr
+from min_interval_posets.sublevel_sets import get_sublevel_sets as gssnr
 
 def get_extremum_type(a, curve):
     '''
@@ -68,11 +68,11 @@ def get_eps_sup(a, curve, eps):
     ex_type_a = get_extremum_type(a, curve.curve)
     if ex_type_a == 'min':
         births_only_merge_tree = births_only(curve.curve)
-        eps_sup_a = gssnr(births_only_merge_tree, curve.curve, eps)
+        eps_sup_a = gssnr(births_only_merge_tree, curve.curve, eps, eps_restriction=False)
     elif ex_type_a == 'max':
         new_curve = Curve(curve.reflect())
         births_only_merge_tree = births_only(new_curve.curve)
-        eps_sup_a = gssnr(births_only_merge_tree, new_curve.curve, eps)
+        eps_sup_a = gssnr(births_only_merge_tree, new_curve.curve, eps, eps_restriction=False)
     else:
         return False
     return eps_sup_a[a]

@@ -22,5 +22,5 @@ def test4():
     y = np.sin(x)
     c4 = Curve({x[i]:y[i] for i in range(len(x))})
     nodelives = get_node_lives(c4)
-    assert(nodelives == {0.0: 0.49978680152075255, 4.7: 0.999748430302803,
-                         1.6: 0.999748430302803, 6.2: 0.4584169273733022})
+    nodelives_round = {u:round(nodelives[u], 8) for u in nodelives.keys()}
+    assert(nodelives_round == {0.0: 0.4997868, 4.7: 0.99974843, 1.6: 0.99974843, 6.2: 0.45841693})
