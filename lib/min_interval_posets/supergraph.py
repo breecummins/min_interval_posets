@@ -180,7 +180,7 @@ def DAG_dist(supergraph):
     '''
     vec1 = [supergraph[0][i][1][0] for i in range(len(supergraph[0]))]+[supergraph[1][i][1][0] for i in range(len(supergraph[1]))]
     vec2 = [supergraph[0][i][1][1] for i in range(len(supergraph[0]))]+[supergraph[1][i][1][1] for i in range(len(supergraph[1]))]
-    dist = math.sqrt(sum((u-v)**2 for u,v in zip(vec1, vec2)))
+    dist = sum(abs(u-v) for u,v in zip(vec1, vec2))
     return dist
 
 def get_supergraph(names, DAG1, DAG2):
