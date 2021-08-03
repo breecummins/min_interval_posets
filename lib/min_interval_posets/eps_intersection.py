@@ -155,5 +155,5 @@ def get_eps_intersection(a, b, curve_a, curve_b):
     epsilons.sort()
 
     for i in range(len(epsilons)):
-        if intervals_intersect(a, b, curve_a, curve_b, epsilons[i]+.0001) == True:
+        if intervals_intersect(a, b, curve_a, curve_b, epsilons[i]+1E-10) == True:
             return epsilons[i]
