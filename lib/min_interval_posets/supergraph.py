@@ -65,6 +65,46 @@ def get_alignmentmat(str1, str2):
                 mat[i][j] = min(mat[i][j-1]+str2[j-1][1], mat[i-1][j]+str1[i-1][1], mat[i-1][j-1]+diff(str1, str2, i, j))
     return mat
 
+def check_bestalignments(str1, str2):
+    '''
+    Check if there are multiple optimal alignments between str1 and str2.
+    :param str1 & str2: list of pairs where the first entry is a string and the second entry is a float
+    :return "multiple optimal alignments" if there are multiple optimal alignments between str1 and str2.
+    Return "unique optimal alignment if there is one optimal alignment between str1 and str2."
+    '''
+    mat = get_alignmentmat(str1, str2)
+    i = len(mat)-1 # row index of mat
+    j = len(mat[0])-1 # column index of mat
+    k = len(str1)-1 # index of str1
+    m = len(str2)-1 # index of str2
+    while i > 0 and j > 0:
+        if mat[i-1][j-1]+diff(str1, str2, i, j) == mat[i][j] and str1[k][0] == str2[m][0] and mat[i-1][j]+str1[i-1][1] == mat[i][j]:
+            return "multiple optimal alignments"
+        elif mat[i-1][j-1]+diff(str1, str2, i, j) == mat[i][j] and str1[k][0] == str2[m][0] and mat[i][j-1]+str2[j-1][1] == mat[i][j]:
+            return "multiple optimal alignments"
+        elif mat[i-1][j]+str1[i-1][1] == mat[i][j] and mat[i][j-1]+str2[j-1][1] == mat[i][j]:
+            return "multiple optimal alignments"
+        elif mat[i-1][j-1]+diff(str1, str2, i, j) == mat[i][j] and str1[k][0] == str2[m][0]: # Diagonal Move
+            k = k-1
+            m = m-1
+            i = i-1
+            j = j-1
+        elif mat[i-1][j]+str1[i-1][1] == mat[i][j]: # Vertical Move
+            i = i-1
+            k = k-1
+        else: # Horizontal move - align node in str2 with an insertion in str1
+            j = j-1
+            m = m-1
+    if i == 0 and j > 0: # In first row of matrix but not first column
+        while j > 0: # Horizontal move
+            j = j-1
+            m = m-1
+    elif j == 0 and i > 0: # In first column of matrix but not first row
+        while i > 0: # Vertical move
+            k = k-1
+            i = i-1
+    return "unique optimal alignment"
+
 def get_bestalignment_index(str1, str2):
     '''
     Compute optimal alignment of str1 and str2.
@@ -168,7 +208,7 @@ def align_DAGnodes_index(names, DAG1, DAG2):
         start1 = start1+(len(strings1[1][i]))
         start2 = start2+(len(strings2[1][i]))
     return aligned_nodes, node_indices
-
+    
 def DAG_dist(supergraph):
     '''
     Computes distance between extremal DAGs using the supergraph
