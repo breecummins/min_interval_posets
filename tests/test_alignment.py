@@ -12,7 +12,7 @@ def test1():
      [1.25, 1.0, 1.0, 0.3, 1.1],
      [2.15, 1.9, 1.4, 1.2, 0.4],
      [2.45, 2.2, 1.7, 1.5, 0.7]])
-    check_uniqueness = sg.check_bestalignments
+    check_uniqueness = sg.check_bestalignments(str1, str2)
     assert(check_uniqueness == "unique optimal alignment")
     alignment = sg.get_bestalignment_index(str1, str2)
     assert(alignment == ([('M', (0, 0.25)),
@@ -37,7 +37,7 @@ def test2():
      [1.15, 0.75, 1.4, 1.07],
      [1.85, 1.45, 0.8, 1.13],
      [2.15, 1.75, 1.1, 0.83]])
-    check_uniqueness = sg.check_bestalignments
+    check_uniqueness = sg.check_bestalignments(str1, str2)
     assert(check_uniqueness == "multiple optimal alignments")
     alignment = sg.get_bestalignment_index(str1, str2)
     assert(alignment == ([('m', (0.5, 0)),
