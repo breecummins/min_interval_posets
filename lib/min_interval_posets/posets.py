@@ -13,8 +13,11 @@ def eps_posets(curves,epsilons):
     for eps in sorted(epsilons):
         all_nodes = []
         all_edges = []
-        for name,curve in curves.items():
-            nodes, edges = get_total_order(name,curve,eps)
+        epss = eps if isinstance(eps,list) else [eps]*len(curves)
+        normalize = False if isinstance(eps,list) else True
+        for (name,curve),e in zip(curves.items(),epss):
+            nodes, edges = get_total_order(name,curve,e,normalize)
+            # print(nodes)
             N = len(all_nodes)
             all_nodes.extend(nodes)
             all_edges.extend([(i+N,j+N) for (i,j) in edges])
@@ -25,22 +28,25 @@ def eps_posets(curves,epsilons):
     return posets
 
 
-def get_total_order(name,curve,eps):
+def get_total_order(name,curve,eps,normalize=True):
     '''
     For a given (named) curve and threshold eps, find the eps-minimum intervals of
     both the maxima and minima of the curve.
     :param name: A string uniquely identifying the time series (curve).
     :param curve: dict with float times keying float function values
-    :param eps: float threshold (noise level) with 0 < eps < 1.
+    :param eps: float threshold or list of float thresholds (noise levels) 
+    :param normalize: True or False, normalize the curve between -0.5 and 0.5
     :return: sorted list of tuples where first element is sublevel set interval and
              second element is name + extrema type
     '''
-    n = curve.normalize()
-    r = curve.normalize_reflect()
+    if normalize:
+        n = curve.normalize()
+        r = curve.normalize_reflect()
+    else:
+        n = curve.curve
+        r = curve.reflect()
     merge_tree_mins = tmt.births_only(n)
     merge_tree_maxs = tmt.births_only(r)
-    # time_ints_mins = ss.minimal_time_ints(merge_tree_mins,n,eps)
-    # time_ints_maxs = ss.minimal_time_ints(merge_tree_maxs,r,eps)
     time_ints_mins = ss.get_sublevel_sets(merge_tree_mins,n,eps)
     time_ints_maxs = ss.get_sublevel_sets(merge_tree_maxs,r,eps)
     labeled_mins = sorted([(v,(name,"min")) for _,v in time_ints_mins.items()])
