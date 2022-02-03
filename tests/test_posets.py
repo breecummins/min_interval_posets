@@ -1,6 +1,9 @@
 from min_interval_posets.curve import Curve
 from min_interval_posets.posets import *
+import min_interval_posets.sublevel_sets as ss
+import min_interval_posets.triplet_merge_trees as tmt
 import numpy as np
+import sys
 
 
 times = [0.0, 4.0, 8.0, 12.0, 16.0, 20.0, 24.0, 28.0, 32.0, 36.0, 40.0, 44.0, 48.0, 52.0, 56.0, 60.0, 64.0, 68.0, 72.0, 76.0, 80.0, 84.0, 88.0, 92.0, 96.0, 100.0, 104.0, 108.0, 112.0, 116.0, 120.0, 124.0, 128.0, 132.0, 136.0, 140.0, 144.0, 148.0, 152.0, 156.0, 160.0, 164.0, 168.0, 172.0, 176.0, 180.0, 184.0, 188.0, 192.0, 196.0]
@@ -159,4 +162,52 @@ def test3():
     assert(len(nodes)==3)
     posets = eps_posets({"curve6":curve6},[eps])
     assert(posets == [(eps, ([], set()))])
+
+
+def test_unnormalized():
+    times = np.arange(0,2*np.pi,0.1)
+    perA = np.zeros(len(times))
+    perA[5] = 0.21
+    perA[38] = 0.25
+    A = 2*np.sin(times) + perA
+    epsA1 = 0.51*(np.min([np.abs(A[5]-A[6]),np.abs(A[5]-A[4])]))
+    epsA2 = 0.51*(np.min([np.abs(A[38]-A[39]),np.abs(A[38]-A[37])]))
+    troughsA = [0.0, 0.6, 3.7, 4.7]
+    peaksA = [0.5, 1.6, 3.8, 6.2]
+    perB = np.zeros(len(times))
+    perB[43] = -0.1
+    perB[59] = 0.07
+    B = np.cos(times) + perB
+    epsB1 = 0.51*(np.min([np.abs(B[43]-B[44]),np.abs(B[43]-B[42])]))
+    epsB2 = 0.51*(np.min([np.abs(B[59]-B[60]),np.abs(B[59]-B[58])]))
+    curveA = Curve(A,times)
+    curveB = Curve(B,times)
+
+    def check_ext(eps):
+        posets = eps_posets({"A" : curveA, "B" : curveB},[eps])
+        # print(posets)
+        # print("\n")
+        ext = posets[0][1][0]
+        Aex = [e for e in ext if e[0] == "A"]
+        Bex = [e for e in ext if e[0] == "B"]
+        return len(Aex), len(Bex)
+
+    ae,be = check_ext([0.0,0.0])
+    assert(ae == 8 and be == 7)
+    ae,be = check_ext([epsA1,0.0])
+    assert(ae == 6 and be == 7)
+    ae,be = check_ext([epsA2,0.0])
+    assert(ae == 4 and be == 7)
+    ae,be = check_ext([0.0,epsB1])
+    assert(ae == 8 and be == 5)
+    ae,be = check_ext([0.0,epsB2])
+    assert(ae == 8 and be == 3)
+    ae,be = check_ext([epsA1,epsB1])
+    assert(ae == 6 and be == 5)
+    ae,be = check_ext([epsA2,epsB2])
+    assert(ae == 4 and be == 3)
+
+if __name__ == "__main__":
+    test_unnormalized()
+
 
