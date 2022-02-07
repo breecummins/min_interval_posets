@@ -4,6 +4,7 @@ def get_sublevel_sets(births_only_merge_tree,curve,eps,eps_restriction=True):
     :param births_only_merge_tree: merge tree dict with intermediate points removed
     :param curve: dict with times keying function values (Curve.curve or Curve.normalized)
     :param eps: float threshold (noise level) For normalized curves, 0 < eps < 1.
+    :param eps_restriction: True or False. If eps_restriction == True, then sublevel set intervals will only be computed for minima whose (merge height minus height of the minimum)/2 are greater than eps. If eps_restriction == False, then sublevel set intervals will be computed for all minima.
     :return: dict of minima birth times keying lifetime intervals
     '''
     if eps_restriction:
