@@ -22,7 +22,7 @@ def test1():
     ('M', (0.3, 0))],
     [('None', 0), (0, 1), (1, 2), (2, 3), (3, 'None')]))
     alignment_cost = sum((abs(alignment[0][i][1][0]-alignment[0][i][1][1])) for i in range(len(alignment[0])))
-    assert(alignment_cost == mat[len(mat)-1][len(mat[0])-1])
+    assert(abs(alignment_cost - mat[len(mat)-1][len(mat[0])-1])<1e-10)
 
 def test2():
     # Insertions at beginning & strings are of different lengths
@@ -62,7 +62,8 @@ def test3():
     ('m', (0.3, 0.33))],
     [(0, 0), (1, 'None'), (2, 'None'), (3, 1), (4, 2)]))
     alignment_cost = sum((abs(alignment[0][i][1][0]-alignment[0][i][1][1])) for i in range(len(alignment[0])))
-    assert(alignment_cost == mat[len(mat)-1][len(mat[0])-1])
+    print(alignment_cost)
+    assert(abs(alignment_cost - mat[len(mat)-1][len(mat[0])-1])<1e-10)
 
 def test4():
     # No diagonal moves in traceback
@@ -87,4 +88,7 @@ def test4():
     (3, 'None'),
     (4, 'None')]))
     alignment_cost = sum((abs(alignment[0][i][1][0]-alignment[0][i][1][1])) for i in range(len(alignment[0])))
-    assert(alignment_cost == mat[len(mat)-1][len(mat[0])-1])
+    assert(abs(alignment_cost - mat[len(mat)-1][len(mat[0])-1])<1e-10)
+
+if __name__ == "__main__":
+    test3()
